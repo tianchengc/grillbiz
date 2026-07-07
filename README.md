@@ -30,3 +30,7 @@ Welcome to **GrillBiz**, a premium bundle of open-source business helper skills 
 ### 6. 🤝 B Corp Skill (Command: `/grill-bcorp` - Pending)
 * **Path:** `b-corp/`
 * **Features:** Interactive tracker guiding you through B Impact Assessment (BIA) pillars and providing customized company policy templates.
+
+---
+Impact-Site-Verification: 8d7edcdd-685d-43b8-ac05-4708d5a6fc11
+

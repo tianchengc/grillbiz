@@ -40,5 +40,32 @@ Welcome to **GrillBiz**, a premium bundle of open-source business helper skills 
 * **Features:** Interactive tracker guiding you through B Impact Assessment (BIA) pillars and providing customized company policy templates.
 
 ---
+
+## ⚡ Quick Start & Installation
+
+GrillBiz can be installed locally or registered as a standard **Model Context Protocol (MCP)** server for immediate use in **Claude Desktop**, **Cursor**, or other compatible AI assistants.
+
+### Prerequisites
+* **Python 3.10 or higher** (Required for the Model Context Protocol SDK).
+
+### One-Command Installation (Mac / Linux)
+Run the automated installer script from the root of the repository:
+```bash
+./install.sh
+```
+This script will:
+1. Verify Python version requirements.
+2. Install Python dependencies (`mcp`, `playwright`, `pillow`).
+3. Setup the headless browser Chromium for batch card exports.
+4. Auto-register the GrillBiz MCP server inside your local **Claude Desktop** config file.
+
+### Manual MCP Setup
+If you are using Cursor, add a new MCP server in your settings:
+* **Name:** `grillbiz`
+* **Type:** `command`
+* **Command:** `python3 -m mcp_server.py` (pointing to the absolute path of `mcp_server.py` in your clone).
+
+---
+
 Impact-Site-Verification: 8d7edcdd-685d-43b8-ac05-4708d5a6fc11
 

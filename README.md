@@ -21,13 +21,15 @@ Welcome to **GrillBiz**, a premium bundle of open-source business helper skills 
 * **Features:** Step-by-step stepper workflow (validates `.env` keys, reads `LEAN_CANVAS.md` context, drafts SEO/GEO captions, automatically queries Facebook Page Places API for location IDs, supports optional API keys for text-only drafting, and publishes live or outputs manual draft copy).
 * **Usage:** `/grill-post [auto_approve=false]`
 
-### 4. 📇 Business Card Skill (Command: `/grill-card` - Pending)
-* **Path:** `business-card/`
-* **Features:** Modern HTML/CSS business card templates (glassmorphism, minimalist dark mode) with a built-in 'Save as PNG' button and Playwright CLI rendering tool.
+### 4. 📇 Business Card Skill: Grill-Card (Command: `/grill-card`)
+* **Path:** `grill-card/`
+* **Features:** Stepper workflow (checks `LEAN_CANVAS.md`), front/back design card generator, multi-member team cards generation, 4 style theme presets (Glassmorphism, Minimalist Dark, Bold Gradient, Classic Light), browser-based `html2canvas` save button, and a background Playwright CLI script (`render_cards.py`) to batch-export high-res card PNGs.
+* **Usage:** `/grill-card`
 
-### 5. 🌳 Linktree-like Bio Website Skill (Command: `/grill-bio` - Pending)
-* **Path:** `linktree/`
-* **Features:** Generates a fully responsive, animated static personal/company bio page matching the styling of the generated business card.
+### 5. 🌳 Instagram Bio Link Skill: Grill-Bio (Command: `/grill-bio`)
+* **Path:** `grill-bio/`
+* **Features:** Mobile-first vertical stack link page generator. Features cohesive visual themes matching business cards, a local Wrangler CLI deployment script (`deploy.sh`) supporting interactive browser login or automated `.env` API tokens, and a pre-configured GitHub Actions workflow template.
+* **Usage:** `/grill-bio`
 
 ### 6. 🔮 Jiuzilihuo Fengshui Skill (Command: `/grill-fengshui` - Pending)
 * **Path:** `jiuzilihuo/`

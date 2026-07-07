@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{COMPANY}} - Links</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Base Global Styling */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #0d0f14;
+            color: #f1f3f9;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .phone-wrapper {
+            width: 100%;
+            max-width: 450px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+            padding: 30px 15px;
+        }
+
+        /* Profile Header */
+        .profile-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .avatar-container {
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(0, 210, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .avatar-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-info h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            letter-spacing: -0.5px;
+        }
+
+        .profile-info p {
+            font-size: 0.95rem;
+            color: #9ba3b2;
+            line-height: 1.5;
+            max-width: 320px;
+        }
+
+        /* Social Icons Grid (patron, onlyfans, instagram, facebook, etc.) */
+        .social-grid {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .social-icon-link {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.2s;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #9ba3b2;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .social-icon-link:hover {
+            transform: scale(1.1);
+            color: #00d2ff;
+            border-color: #00d2ff;
+        }
+
+        /* Vertical Link Stack */
+        .links-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .link-card {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 16px 20px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        /* Blogs & Products Sections */
+        .section-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .section-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #9ba3b2;
+            margin-bottom: 5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 5px;
+        }
+
+        .item-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            gap: 15px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s;
+        }
+
+        .item-card:hover {
+            background: rgba(0, 210, 255, 0.05);
+            border-color: #00d2ff;
+            transform: translateY(-2px);
+        }
+
+        .item-image {
+            width: 70px;
+            height: 70px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .item-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 4px;
+            flex-grow: 1;
+        }
+
+        .item-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .item-desc {
+            font-size: 0.8rem;
+            color: #9ba3b2;
+            line-height: 1.4;
+        }
+
+        .item-price {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #ff7b00;
+        }
+
+        /* Theme Styles */
+        
+        /* THEME 1: GLASSMORPHISM (Default) */
+        body.theme-glassmorphism {
+            background: radial-gradient(circle at top, #141822 0%, #0d0f14 100%);
+        }
+        .theme-glassmorphism .link-card {
+            background: rgba(20, 24, 33, 0.6);
+            border: 1px solid rgba(0, 210, 255, 0.15);
+            color: #00d2ff;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        .theme-glassmorphism .link-card:hover {
+            border-color: #00d2ff;
+            background: rgba(0, 210, 255, 0.1);
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* THEME 2: MINIMALIST DARK */
+        body.theme-dark-minimalist {
+            background-color: #050505;
+        }
+        .theme-dark-minimalist .avatar-container {
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+        .theme-dark-minimalist .link-card {
+            background: #0a0a0a;
+            border: 1px solid #1c1c1c;
+            color: #f1f3f9;
+        }
+        .theme-dark-minimalist .link-card:hover {
+            background: #f1f3f9;
+            color: #050505;
+            transform: translateY(-1px);
+        }
+
+        /* THEME 3: BOLD VIBRANT GRADIENT */
+        body.theme-gradient-bold {
+            background: linear-gradient(135deg, #1b0a3a 0%, #0d0f26 100%);
+        }
+        .theme-gradient-bold .avatar-container {
+            border-color: #ff007b;
+        }
+        .theme-gradient-bold .link-card {
+            background: linear-gradient(90deg, #ff007b, #7b00ff);
+            color: #fff;
+            border: none;
+        }
+        .theme-gradient-bold .link-card:hover {
+            filter: brightness(1.2);
+            box-shadow: 0 0 20px rgba(255, 0, 128, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* THEME 4: CLASSIC LIGHT */
+        body.theme-classic-light {
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+        .theme-classic-light .avatar-container {
+            border-color: #cbd5e1;
+        }
+        .theme-classic-light .profile-info p {
+            color: #64748b;
+        }
+        .theme-classic-light .link-card {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #0f172a;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+        }
+        .theme-classic-light .link-card:hover {
+            border-color: #0f172a;
+            transform: translateY(-1px);
+        }
+
+        /* Floating theme review selector */
+        .theme-panel {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 12, 18, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 30px;
+            display: flex;
+            gap: 10px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+        }
+
+        .theme-btn {
+            background: none;
+            border: none;
+            color: #9ba3b2;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 15px;
+        }
+
+        .theme-btn.active {
+            background: #00d2ff;
+            color: #0d0f14;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 30px;
+            font-size: 0.75rem;
+            color: #64748b;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="theme-glassmorphism">
+    <div class="phone-wrapper">
+        <!-- PROFILE HEADER -->
+        <div class="profile-header">
+            <div class="avatar-container">
+                <img src="{{LOGO_URL}}" alt="{{COMPANY}} Logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png';">
+            </div>
+            <div class="profile-info">
+                <h1>{{COMPANY}}</h1>
+                <p>{{BIO_DESCRIPTION}}</p>
+            </div>
+        </div>
+
+        <!-- SOCIAL SHARING ICONS -->
+        <div class="social-grid" id="social-grid-container">
+            <!-- Dynamically Rendered via JS -->
+        </div>
+
+        <!-- STACK OF PRIMARY ACTION LINKS -->
+        <div class="links-stack" id="links-container">
+            <!-- Dynamically Rendered via JS -->
+        </div>
+
+        <!-- DYNAMIC PRODUCTS / BLOGS SECTIONS -->
+        <div class="section-container" id="products-section" style="display:none;">
+            <div class="section-title">Featured Products</div>
+            <div id="products-container"></div>
+        </div>
+
+        <div class="section-container" id="blogs-section" style="display:none;">
+            <div class="section-title">Latest Updates</div>
+            <div id="blogs-container"></div>
+        </div>
+
+        <footer>
+            Powered by GrillBiz
+        </footer>
+    </div>
+
+    <!-- Floating theme review selector -->
+    <div class="theme-panel">
+        <button class="theme-btn active" onclick="setTheme('theme-glassmorphism', this)">Glass</button>
+        <button class="theme-btn" onclick="setTheme('theme-dark-minimalist', this)">Minimal</button>
+        <button class="theme-btn" onclick="setTheme('theme-gradient-bold', this)">Gradient</button>
+        <button class="theme-btn" onclick="setTheme('theme-classic-light', this)">Light</button>
+    </div>
+
+    <script>
+        const socialData = {{SOCIAL_DATA_JSON}};
+        const linksData = {{LINKS_DATA_JSON}};
+        const productsData = {{PRODUCTS_DATA_JSON}};
+        const blogsData = {{BLOGS_DATA_JSON}};
+
+        function setTheme(themeName, btn) {
+            document.body.className = themeName;
+            document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        function renderPage() {
+            // Render Social Icons
+            const socialContainer = document.getElementById('social-grid-container');
+            socialContainer.innerHTML = '';
+            if (socialData.length === 0) {
+                socialContainer.style.display = 'none';
+            } else {
+                socialData.forEach(item => {
+                    const a = document.createElement('a');
+                    a.href = item.url;
+                    a.className = 'social-icon-link';
+                    a.target = '_blank';
+                    a.textContent = item.platform;
+                    socialContainer.appendChild(a);
+                });
+            }
+
+            // Render Core Links
+            const linksContainer = document.getElementById('links-container');
+            linksContainer.innerHTML = '';
+            linksData.forEach(link => {
+                const a = document.createElement('a');
+                a.href = link.url;
+                a.className = 'link-card';
+                a.target = '_blank';
+                a.textContent = link.title;
+                linksContainer.appendChild(a);
+            });
+
+            // Render Products
+            const prodSection = document.getElementById('products-section');
+            const prodContainer = document.getElementById('products-container');
+            prodContainer.innerHTML = '';
+            if (productsData.length > 0) {
+                prodSection.style.display = 'flex';
+                productsData.forEach(p => {
+                    const card = document.createElement('a');
+                    card.className = 'item-card';
+                    card.href = p.url;
+                    card.target = '_blank';
+                    card.innerHTML = `
+                        <img class="item-image" src="${p.image_url}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3649/3649775.png';">
+                        <div class="item-info">
+                            <div class="item-title">${p.title}</div>
+                            <div class="item-desc">${p.description}</div>
+                            <div class="item-price">${p.price}</div>
+                        </div>
+                    `;
+                    prodContainer.appendChild(card);
+                });
+            }
+
+            // Render Blogs
+            const blogSection = document.getElementById('blogs-section');
+            const blogContainer = document.getElementById('blogs-container');
+            blogContainer.innerHTML = '';
+            if (blogsData.length > 0) {
+                blogSection.style.display = 'flex';
+                blogsData.forEach(b => {
+                    const card = document.createElement('a');
+                    card.className = 'item-card';
+                    card.href = b.url;
+                    card.target = '_blank';
+                    card.innerHTML = `
+                        <img class="item-image" src="${b.image_url}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135679.png';">
+                        <div class="item-info">
+                            <div class="item-title">${b.title}</div>
+                            <div class="item-desc">${b.description}</div>
+                        </div>
+                    `;
+                    blogContainer.appendChild(card);
+                });
+            }
+        }
+
+        // Run
+        renderPage();
+    </script>
+</body>
+</html>

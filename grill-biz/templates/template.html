@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lean Canvas - {{TITLE}}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0d0f14;
+            --card-bg: rgba(20, 24, 33, 0.7);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-color: #f1f3f9;
+            --text-muted: #9ba3b2;
+            --accent-blue: #00d2ff;
+            --accent-orange: #ff7b00;
+            --accent-green: #00e676;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --glow-color: rgba(0, 210, 255, 0.15);
+            --sub-bg: rgba(255, 255, 255, 0.03);
+            --sub-border: rgba(255, 255, 255, 0.05);
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f5f7fa;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --card-border: rgba(0, 0, 0, 0.08);
+            --text-color: #1a1f2c;
+            --text-muted: #64748b;
+            --accent-blue: #0284c7;
+            --accent-orange: #ea580c;
+            --accent-green: #16a34a;
+            --shadow-color: rgba(0, 0, 0, 0.05);
+            --glow-color: rgba(2, 132, 199, 0.08);
+            --sub-bg: rgba(0, 0, 0, 0.02);
+            --sub-border: rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--card-border);
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-color);
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 4px 10px var(--shadow-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 15px var(--glow-color);
+        }
+
+        /* The 5-Column Grid Layout */
+        .canvas-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(2, minmax(280px, auto));
+            gap: 15px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 30px var(--shadow-color);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .card:hover {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 20px var(--glow-color);
+            transform: translateY(-2px);
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+        }
+
+        .card-num {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            opacity: 0.4;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent-blue);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--sub-border);
+            padding-bottom: 8px;
+        }
+
+        .card-content {
+            flex-grow: 1;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .card-content ul {
+            list-style-type: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .card-content li {
+            position: relative;
+            padding-left: 18px;
+        }
+
+        .card-content li::before {
+            content: "•";
+            color: var(--accent-orange);
+            font-size: 1.2rem;
+            position: absolute;
+            left: 0;
+            top: -2px;
+        }
+
+        .sub-section {
+            background: var(--sub-bg);
+            border: 1px solid var(--sub-border);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .sub-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sub-content {
+            font-size: 0.9rem;
+            color: var(--text-color);
+            font-style: italic;
+        }
+
+        /* Custom Grid Placements */
+        .card-problem {
+            grid-column: 1;
+            grid-row: 1 / 3;
+        }
+
+        .card-segments {
+            grid-column: 5;
+            grid-row: 1 / 3;
+        }
+
+        .card-uvp {
+            grid-column: 3;
+            grid-row: 1 / 3;
+        }
+
+        .card-solution {
+            grid-column: 2;
+            grid-row: 1;
+        }
+
+        .card-metrics {
+            grid-column: 2;
+            grid-row: 2;
+        }
+
+        .card-advantage {
+            grid-column: 4;
+            grid-row: 1;
+        }
+
+        .card-channels {
+            grid-column: 4;
+            grid-row: 2;
+        }
+
+        /* Bottom Grid Cost / Revenue */
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .bottom-card {
+            min-height: 180px;
+        }
+
+        @media (max-width: 1024px) {
+            .canvas-grid {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: auto;
+            }
+            .card-problem, .card-segments, .card-uvp, .card-solution, .card-metrics, .card-advantage, .card-channels {
+                grid-column: span 1;
+                grid-row: span 1;
+            }
+            .bottom-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .canvas-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>{{TITLE}}</h1>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <span id="theme-icon">☀️</span> <span id="theme-text">Light Mode</span>
+            </button>
+        </header>
+
+        <div class="canvas-grid">
+            <!-- 1. PROBLEM -->
+            <div class="card card-problem">
+                <div class="card-num">01</div>
+                <div class="card-title">Problem</div>
+                <div class="card-content">
+                    <ul>{{PROBLEM}}</ul>
+                </div>
+                {{ALTERNATIVES_HTML}}
+            </div>
+
+            <!-- 4. SOLUTION -->
+            <div class="card card-solution">
+                <div class="card-num">04</div>
+                <div class="card-title">Solution</div>
+                <div class="card-content">
+                    <ul>{{SOLUTION}}</ul>
+                </div>
+            </div>
+
+            <!-- 8. KEY METRICS -->
+            <div class="card card-metrics">
+                <div class="card-num">08</div>
+                <div class="card-title">Key Metrics</div>
+                <div class="card-content">
+                    <ul>{{METRICS}}</ul>
+                </div>
+            </div>
+
+            <!-- 3. UVP -->
+            <div class="card card-uvp">
+                <div class="card-num">03</div>
+                <div class="card-title">Unique Value Prop</div>
+                <div class="card-content">
+                    <ul>{{UVP}}</ul>
+                </div>
+                {{CONCEPT_HTML}}
+            </div>
+
+            <!-- 9. UNFAIR ADVANTAGE -->
+            <div class="card card-advantage">
+                <div class="card-num">09</div>
+                <div class="card-title">Unfair Advantage</div>
+                <div class="card-content">
+                    <ul>{{ADVANTAGE}}</ul>
+                </div>
+            </div>
+
+            <!-- 5. CHANNELS -->
+            <div class="card card-channels">
+                <div class="card-num">05</div>
+                <div class="card-title">Channels</div>
+                <div class="card-content">
+                    <ul>{{CHANNELS}}</ul>
+                </div>
+            </div>
+
+            <!-- 2. CUSTOMER SEGMENTS -->
+            <div class="card card-segments">
+                <div class="card-num">02</div>
+                <div class="card-title">Customer Segments</div>
+                <div class="card-content">
+                    <ul>{{SEGMENTS}}</ul>
+                </div>
+                {{EARLY_ADOPTERS_HTML}}
+            </div>
+        </div>
+
+        <div class="bottom-grid">
+            <!-- 7. COST STRUCTURE -->
+            <div class="card bottom-card">
+                <div class="card-num">07</div>
+                <div class="card-title">Cost Structure</div>
+                <div class="card-content">
+                    <ul>{{COSTS}}</ul>
+                </div>
+            </div>
+
+            <!-- 6. REVENUE STREAMS -->
+            <div class="card bottom-card">
+                <div class="card-num">06</div>
+                <div class="card-title">Revenue Streams</div>
+                <div class="card-content">
+                    <ul>{{REVENUE}}</ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            html.setAttribute('data-theme', newTheme);
+            
+            const icon = document.getElementById('theme-icon');
+            const text = document.getElementById('theme-text');
+            
+            if (newTheme === 'dark') {
+                icon.textContent = '☀️';
+                text.textContent = 'Light Mode';
+            } else {
+                icon.textContent = '🌙';
+                text.textContent = 'Dark Mode';
+            }
+        }
+    </script>
+</body>
+</html>

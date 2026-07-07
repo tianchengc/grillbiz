@@ -30,10 +30,3 @@ Welcome to **GrillBiz**, a premium bundle of open-source business helper skills 
 ### 6. 🤝 B Corp Skill (Command: `/grill-bcorp` - Pending)
 * **Path:** `b-corp/`
 * **Features:** Interactive tracker guiding you through B Impact Assessment (BIA) pillars and providing customized company policy templates.
-
----
-
-## Monetization Model (100% Affiliate-Based)
-GrillBiz is completely free and client-side. The bundle generates revenue via domain registration affiliate commission links (supporting Namecheap) embedded in the `/grill-name` output.
-* **Configuration:** Register as a Namecheap affiliate on Impact Radius or CJ, obtain your affiliate ID, and set the `NAMECHEAP_AFFILIATE_ID` environment variable. The checking script will automatically append your affiliate code to domain links.
-* If you want to register at wholesale prices without supporting the project, direct at-cost Cloudflare Registrar links are also output in the results.

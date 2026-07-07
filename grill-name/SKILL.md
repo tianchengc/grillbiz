@@ -43,9 +43,9 @@ If `domain_check` is enabled, check candidates against the trust hierarchy:
 2. **Modern TLD Fallbacks (`.co`, `.io`, `.ai`):** Only consider these if the `.com` is taken and parked by speculative domain brokers demanding excessive fees.
 3. **Direct Check:** Execute the [check_domain.py](file://./check_domain.py) script on the candidates:
    `python3 check_domain.py <domains...>`
-4. **Affiliate & Registrar Strategy:**
-   - **Cloudflare Registrar:** Directs users to register at wholesale at-cost cost (e.g. $10.44 USD/year for `.com`) via the URL `https://domains.cloudflare.com/?domain=name`.
-   - **Namecheap (Affiliate Link):** Generates Namecheap purchase links. To monetize this open-source skill, users can configure their affiliate ID in the environment variable `NAMECHEAP_AFFILIATE_ID` (or via CLI `--aff-id`). If set, the link will route through their affiliate code.
+4. **Registrar Strategy:**
+   - **Cloudflare Registrar:** Directs users to register at wholesale at-cost cost via the URL `https://domains.cloudflare.com/?domain=name`.
+   - **Namecheap:** Generates Namecheap registration links.
 5. **Loop Engineering:** Discard taken domains. If the number of available candidates is less than `count`, loop back to Stage 1 to generate fresh candidates. Repeat until you have `count` fully available `.com` domains.
 
 ### Stage 3: The Risk Grill

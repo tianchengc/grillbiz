@@ -16,17 +16,18 @@ Welcome to **GrillBiz**, a premium bundle of open-source business helper skills 
 * **Features:** Guided 3-stage brand analysis (using neologisms, suggestive metaphors, and compounds), domain checking (prioritizing available `.com` domains), automated DNS/HTTP checks, raw socket WHOIS queries, trademark risk scanning, and registrar link routing. Automatically reads `LEAN_CANVAS.md` context if present.
 * **Usage:** `/grill-name [count=5] [domain_check=true]`
 
-### 3. 📇 Business Card Skill (Command: `/grill-card` - Pending)
+### 3. 📸 Instagram Post Skill: Grill-Post (Command: `/grill-post`)
+* **Path:** `grill-post/`
+* **Features:** Step-by-step stepper workflow (validates `.env` keys, reads `LEAN_CANVAS.md` context, drafts SEO/GEO captions, automatically queries Facebook Page Places API for location IDs, supports optional API keys for text-only drafting, and publishes live or outputs manual draft copy).
+* **Usage:** `/grill-post [auto_approve=false]`
+
+### 4. 📇 Business Card Skill (Command: `/grill-card` - Pending)
 * **Path:** `business-card/`
 * **Features:** Modern HTML/CSS business card templates (glassmorphism, minimalist dark mode) with a built-in 'Save as PNG' button and Playwright CLI rendering tool.
 
-### 4. 🌳 Linktree-like Bio Website Skill (Command: `/grill-bio` - Pending)
+### 5. 🌳 Linktree-like Bio Website Skill (Command: `/grill-bio` - Pending)
 * **Path:** `linktree/`
 * **Features:** Generates a fully responsive, animated static personal/company bio page matching the styling of the generated business card.
-
-### 5. 📸 Instagram Post Skill (Command: `/grill-post` - Pending)
-* **Path:** `instagram/`
-* **Features:** Automates visual content generation and posts directly to Instagram Business accounts using the Instagram Graph API.
 
 ### 6. 🔮 Jiuzilihuo Fengshui Skill (Command: `/grill-fengshui` - Pending)
 * **Path:** `jiuzilihuo/`

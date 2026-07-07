@@ -26,3 +26,7 @@ yarn-error.log*
 # (Prevents private business profiles from leaking into the open-source codebase)
 grillbiz-profiles/
 LEAN_CANVAS.md
+
+# Ignore local test run execution outputs
+# (Allows committing test profiles and scripts under tests/ while ignoring generated results)
+tests/output/

@@ -21,3 +21,8 @@ yarn-error.log*
 # AI Agent Configuration
 .agents/
 .gents/
+
+# Generated Client Profiles & Business Assets
+# (Prevents private business profiles from leaking into the open-source codebase)
+grillbiz-profiles/
+LEAN_CANVAS.md

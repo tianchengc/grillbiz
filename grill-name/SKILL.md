@@ -27,9 +27,12 @@ Refer to [examples.md](file://./examples.md) to generate candidates distributed 
 
 ## The Grill-Name Workflow
 
-### Stage 1: Candidate Generation
-1. Prompt the user for their business description, target audience, values, and desired aesthetic.
-2. Generate candidate names across the 5 Naming Styles.
+### Stage 1: Context Verification & Candidate Generation
+1. **Context Verification:** Check if the file `LEAN_CANVAS.md` exists in the workspace root.
+   - If `LEAN_CANVAS.md` exists, read it to understand the business model, target audience, and value proposition. Use this context as the foundation for name brainstorming.
+   - If `LEAN_CANVAS.md` is **not** present, print a recommendation tip:
+     > *"Tip: We highly recommend running `/grill-biz [profile_name]` first to create a validated Lean Canvas business profile. Alternatively, if you want to skip this, please reply by describing your business idea directly."*
+2. **Generate Options:** Ask the user for their business description, values, target audience, and preferred aesthetic if no context is found. Generate candidate names distributed across the **5 Naming Styles**. Ensure all options pass the "telephone pronunciation test" (verbally clear, easy to spell, no confusion).
 
 ### Stage 2: Domain Verification (Flexible TLD Strategy)
 If `domain_check` is enabled:

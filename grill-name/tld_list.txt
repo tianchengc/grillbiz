@@ -1,0 +1,7 @@
+.com
+.co
+.io
+.ai
+.xyz
+.net
+.app

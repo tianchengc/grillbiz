@@ -109,7 +109,15 @@ def check_whois(domain):
         "no entries found",
         "status: available",
         "incorrect domain name",
-        "no registered unit"
+        "no registered unit",
+        "not registered",
+        "no match for",
+        "available for registration",
+        "no data found",
+        "not exist",
+        "no entries",
+        "domain status: available",
+        "status: free"
     ]
     
     raw_lower = raw_whois.lower()
@@ -186,9 +194,23 @@ def get_cloudflare_link(domain):
     return f"https://domains.cloudflare.com/?domain={sld}"
 
 
+def load_tld_list():
+    """Load default domain extensions from tld_list.txt or fallback to standard defaults."""
+    tld_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tld_list.txt")
+    defaults = ["com", "co", "io", "ai", "xyz", "net", "app"]
+    if os.path.exists(tld_path):
+        try:
+            with open(tld_path, "r", encoding="utf-8") as f:
+                tlds = [line.strip().lstrip(".") for line in f if line.strip()]
+                return tlds if tlds else defaults
+        except Exception:
+            pass
+    return defaults
+
 def main():
     parser = argparse.ArgumentParser(description="Check domain availability.")
-    parser.add_argument("domains", nargs="+", help="One or more domains to check (e.g. example.com)")
+    parser.add_argument("candidates", nargs="+", help="One or more domains or base brand names to check")
+    parser.add_argument("--tlds", help="Comma-separated list of domain extensions (tails) to check (e.g., com,co,net,ca)")
     parser.add_argument("--cf-token", help="Cloudflare API Token")
     parser.add_argument("--cf-account", help="Cloudflare Account ID")
     parser.add_argument("--aff-id", help="Namecheap Affiliate ID")
@@ -200,13 +222,29 @@ def main():
     cf_account = args.cf_account or os.environ.get("CLOUDFLARE_ACCOUNT_ID")
     affiliate_id = args.aff_id or os.environ.get("NAMECHEAP_AFFILIATE_ID")
 
+    # Determine TLD extensions to check
+    if args.tlds:
+        tld_list = [t.strip().lstrip(".") for t in args.tlds.split(",") if t.strip()]
+    else:
+        tld_list = load_tld_list()
+
+    # Expand brand candidates if they do not specify a TLD (no dot in the name)
+    domains_to_check = []
+    for candidate in args.candidates:
+        candidate = candidate.strip().lower()
+        if not candidate:
+            continue
+        if "." in candidate:
+            # Full domain name provided (e.g. google.com)
+            domains_to_check.append(candidate)
+        else:
+            # Base brand name provided (e.g. google), check all TLDs
+            for tld in tld_list:
+                domains_to_check.append(f"{candidate}.{tld}")
+
     results = []
 
-    for domain in args.domains:
-        domain = domain.strip().lower()
-        if not domain:
-            continue
-        
+    for domain in domains_to_check:
         info = {
             "domain": domain,
             "status": "Unknown",

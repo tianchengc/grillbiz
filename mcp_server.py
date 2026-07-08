@@ -18,17 +18,21 @@ mcp = FastMCP("grillbiz", version="1.1.0")
 # ==========================================================
 
 @mcp.tool()
-def check_domain(domain: str) -> str:
+def check_domain(domain: str, tlds: str = None) -> str:
     """
-    Check if a specific domain is available or taken using DNS, WHOIS, and HTTP checks.
+    Check if a specific domain or base brand name is available or taken.
     
     Args:
-        domain: The domain name to check (e.g. 'google.com').
+        domain: The domain name or base brand name to check (e.g. 'google' or 'google.com').
+        tlds: Comma-separated list of extensions to check (e.g. 'com,co,net,ca'). If omitted, uses default list.
     """
     script_path = os.path.join(os.path.dirname(__file__), "grill-name", "check_domain.py")
+    cmd = [sys.executable, script_path, domain]
+    if tlds:
+        cmd.extend(["--tlds", tlds])
     try:
         res = subprocess.run(
-            [sys.executable, script_path, domain],
+            cmd,
             capture_output=True, text=True, check=True
         )
         return res.stdout

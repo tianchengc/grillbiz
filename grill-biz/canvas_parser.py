@@ -48,12 +48,12 @@ def parse_markdown(filepath):
                 continue
             
             # Check for sub-elements starting with **
-            if "alternative" in line.lower() and "**" in line:
-                sections["alternatives"] = re.sub(r"^\*\s*\*\*.*?\*\*:\s*", "", line)
-            elif "early adopter" in line.lower() and "**" in line:
-                sections["early_adopters"] = re.sub(r"^\*\s*\*\*.*?\*\*:\s*", "", line)
-            elif "concept" in line.lower() and "**" in line:
-                sections["concept"] = re.sub(r"^\*\s*\*\*.*?\*\*:\s*", "", line)
+            if re.search(r"^\*\s*\*\*[^:]*?alternative", line, re.IGNORECASE):
+                sections["alternatives"] = re.sub(r"^\*\s*\*\*.*?\*\*:\s*|^\*\s*\*\*.*?\:\*\*\s*", "", line)
+            elif re.search(r"^\*\s*\*\*[^:]*?early adopter", line, re.IGNORECASE):
+                sections["early_adopters"] = re.sub(r"^\*\s*\*\*.*?\*\*:\s*|^\*\s*\*\*.*?\:\*\*\s*", "", line)
+            elif re.search(r"^\*\s*\*\*[^:]*?concept", line, re.IGNORECASE):
+                sections["concept"] = re.sub(r"^\*\s*\*\*.*?\*\*:\s*|^\*\s*\*\*.*?\:\*\*\s*", "", line)
             else:
                 # Standard bullet point
                 clean_bullet = re.sub(r"^\*\s*", "", line)

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brand Logo Catalog - {{TITLE}}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0d0f14;
+            --card-bg: rgba(20, 24, 33, 0.7);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-color: #f1f3f9;
+            --text-muted: #9ba3b2;
+            --accent-blue: #00d2ff;
+            --accent-orange: #ff7b00;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --glow-color: rgba(0, 210, 255, 0.15);
+            --sub-bg: rgba(255, 255, 255, 0.03);
+            --sub-border: rgba(255, 255, 255, 0.05);
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f5f7fa;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --card-border: rgba(0, 0, 0, 0.08);
+            --text-color: #1a1f2c;
+            --text-muted: #64748b;
+            --accent-blue: #0284c7;
+            --accent-orange: #ea580c;
+            --shadow-color: rgba(0, 0, 0, 0.05);
+            --glow-color: rgba(2, 132, 199, 0.08);
+            --sub-bg: rgba(0, 0, 0, 0.02);
+            --sub-border: rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--card-border);
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .brand-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .brand-sub {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--accent-orange);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .links {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .link-item {
+            color: var(--text-muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            background: var(--sub-bg);
+            border: 1px solid var(--sub-border);
+        }
+
+        .link-item:hover {
+            color: var(--text-color);
+            border-color: var(--accent-blue);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .divider {
+            color: var(--card-border);
+        }
+
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-color);
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 4px 10px var(--shadow-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 15px var(--glow-color);
+        }
+
+        /* Logos Grid */
+        .logo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .logo-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 30px var(--shadow-color);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            align-items: center;
+        }
+
+        .logo-card.pinned {
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 15px rgba(255, 123, 0, 0.15);
+        }
+
+        .logo-card:hover {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 20px var(--glow-color);
+            transform: translateY(-2px);
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+        }
+
+        .logo-frame {
+            width: 100%;
+            aspect-ratio: 1;
+            background: #fff;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 1px solid var(--card-border);
+        }
+
+        .logo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .logo-info {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-id {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .logo-round {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 20px;
+            background: var(--sub-bg);
+            color: var(--accent-blue);
+            border: 1px solid var(--sub-border);
+        }
+
+        .logo-actions {
+            width: 100%;
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .like-btn {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid var(--card-border);
+            background: var(--sub-bg);
+            color: var(--text-color);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .like-btn.active {
+            background: rgba(255, 123, 0, 0.15);
+            border-color: var(--accent-orange);
+            color: var(--accent-orange);
+        }
+
+        .download-btn {
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid var(--card-border);
+            background: var(--sub-bg);
+            color: var(--text-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .download-btn:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        /* Feedback Panel */
+        .feedback-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 30px var(--shadow-color);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .feedback-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+        }
+
+        .feedback-textarea {
+            width: 100%;
+            height: 100px;
+            background: var(--sub-bg);
+            border: 1px solid var(--sub-border);
+            border-radius: 8px;
+            padding: 12px;
+            color: var(--text-color);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            resize: none;
+        }
+
+        .feedback-textarea:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .feedback-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .copy-btn {
+            background: var(--accent-orange);
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 123, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .copy-btn:hover {
+            box-shadow: 0 0 20px rgba(255, 123, 0, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="brand-group">
+                <h1>{{TITLE}}</h1>
+                <div class="brand-sub">by GrillBiz</div>
+            </div>
+            <div class="header-right">
+                <div class="links">
+                    <a href="https://github.com/tianchengc/grillbiz" target="_blank" rel="noopener noreferrer" class="link-item">
+                        GitHub
+                    </a>
+                    <span class="divider">|</span>
+                    <a href="https://www.linkedin.com/in/tianchengc/" target="_blank" rel="noopener noreferrer" class="link-item">
+                        LinkedIn
+                    </a>
+                </div>
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <span id="theme-icon">☀️</span> <span id="theme-text">Light Mode</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="instructions-banner" style="background: var(--sub-bg); border: 1px solid var(--sub-border); padding: 20px; border-radius: 12px; font-size: 0.95rem; line-height: 1.6; color: var(--text-color);">
+            <strong style="color: var(--accent-orange); display: block; margin-bottom: 6px; font-size: 1.05rem;">👉 Step-by-Step Taste Distillation Instructions</strong>
+            Select all the logos that you like below. Your selections will help distill your brand style preferences. In the next round, the generator will focus on polishing and refining these selected styles into new, high-quality variations.
+        </div>
+
+        <div class="logo-grid">
+            {{LOGOS_HTML}}
+        </div>
+
+        <div class="feedback-panel">
+            <div class="feedback-title">Refinement Loop Feedback Prompt</div>
+            <p style="font-size: 0.9rem; color: var(--text-muted)">
+                Select your favorite logo from the options above, type any changes or refinements you want to see, and click "Copy Feedback Prompt". Then paste it directly into your chat.
+            </p>
+            <textarea class="feedback-textarea" id="feedbackPrompt" readonly>[GRILL-LOGO FEEDBACK] No logo selected. Please select a logo above to generate feedback prompt.</textarea>
+            <div class="feedback-actions">
+                <div style="font-size: 0.9rem; color: var(--text-muted);">
+                    Liked Logo: <span id="selectedLogoId" style="color: var(--accent-orange); font-weight: 700;">None</span>
+                </div>
+                <button class="copy-btn" onclick="copyFeedback()">
+                    <span>📋</span> Copy Feedback Prompt
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedLogos = new Set();
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            html.setAttribute('data-theme', newTheme);
+            
+            const icon = document.getElementById('theme-icon');
+            const text = document.getElementById('theme-text');
+            
+            if (newTheme === 'dark') {
+                icon.textContent = '☀️';
+                text.textContent = 'Light Mode';
+            } else {
+                icon.textContent = '🌙';
+                text.textContent = 'Dark Mode';
+            }
+        }
+
+        function selectLogo(logoId) {
+            const btn = document.getElementById(`like-btn-${logoId}`);
+            const card = btn.closest('.logo-card');
+            
+            if (selectedLogos.has(logoId)) {
+                selectedLogos.delete(logoId);
+                if (btn) {
+                    btn.classList.remove('active');
+                    btn.innerHTML = '<span>🤍</span> Select Logo';
+                }
+                if (card) card.classList.remove('pinned');
+            } else {
+                selectedLogos.add(logoId);
+                if (btn) {
+                    btn.classList.add('active');
+                    btn.innerHTML = '<span>❤️</span> Selected';
+                }
+                if (card) card.classList.add('pinned');
+            }
+
+            const selectedArray = Array.from(selectedLogos);
+            document.getElementById('selectedLogoId').textContent = selectedArray.join(', ').toUpperCase() || 'None';
+            updatePrompt();
+        }
+
+        function updatePrompt() {
+            const textarea = document.getElementById('feedbackPrompt');
+            const selectedArray = Array.from(selectedLogos);
+            
+            if (selectedArray.length === 0) {
+                textarea.value = "[GRILL-LOGO FEEDBACK] No logo selected. Please select one or more logos above to generate the feedback prompt.";
+                textarea.readOnly = true;
+                return;
+            }
+
+            textarea.value = `[GRILL-LOGO FEEDBACK] Liked: ${selectedArray.join(', ')}. Style notes: [Tell me what you like about these styles and how we should refine/polish them in the next round...]`;
+            textarea.readOnly = false;
+        }
+
+        function copyFeedback() {
+            const textarea = document.getElementById('feedbackPrompt');
+            textarea.select();
+            document.execCommand('copy');
+            
+            const copyBtn = document.querySelector('.copy-btn');
+            const originalText = copyBtn.innerHTML;
+            copyBtn.innerHTML = "<span>✅</span> Copied!";
+            setTimeout(() => {
+                copyBtn.innerHTML = originalText;
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

@@ -59,6 +59,24 @@ def compile_lean_canvas(profile_path: str, output_path: str) -> str:
         return f"Error compiling canvas: {str(e)}"
 
 @mcp.tool()
+def compile_logo_catalog(profile_name: str) -> str:
+    """
+    Compile generated brand logos from state.json into an interactive HTML catalog page.
+    
+    Args:
+        profile_name: The name of the business profile.
+    """
+    script_path = os.path.join(os.path.dirname(__file__), "grill-logo", "logo_parser.py")
+    try:
+        res = subprocess.run(
+            [sys.executable, script_path, profile_name],
+            capture_output=True, text=True, check=True
+        )
+        return res.stdout
+    except Exception as e:
+        return f"Error compiling logo catalog: {str(e)}"
+
+@mcp.tool()
 def generate_business_card_page(company: str, cards_data_json: str, output_path: str) -> str:
     """
     Generate the HTML business card list page by injecting team member details into the card template.
@@ -196,9 +214,9 @@ def grill_name_workflow() -> str:
     return _read_skill_instructions("grill-name")
 
 @mcp.prompt()
-def grill_post_workflow() -> str:
-    """Load the Grill-Post social media draft and automated API publishing workflow."""
-    return _read_skill_instructions("grill-post")
+def grill_logo_workflow() -> str:
+    """Load the Grill-Logo brand logo creation, selection, and refinement guidelines."""
+    return _read_skill_instructions("grill-logo")
 
 @mcp.prompt()
 def grill_card_workflow() -> str:
@@ -209,6 +227,11 @@ def grill_card_workflow() -> str:
 def grill_bio_workflow() -> str:
     """Load the Grill-Bio mobile bio link website builder and deployment workflow."""
     return _read_skill_instructions("grill-bio")
+
+@mcp.prompt()
+def grill_post_workflow() -> str:
+    """Load the Grill-Post social media draft and automated API publishing workflow."""
+    return _read_skill_instructions("grill-post")
 
 
 if __name__ == "__main__":

@@ -16,10 +16,10 @@ Welcome to **GrillBiz**, a premium bundle of open-source business helper skills 
 * **Features:** Guided 3-stage brand analysis (using neologisms, suggestive metaphors, and compounds), domain checking (prioritizing available `.com` domains), automated DNS/HTTP checks, raw socket WHOIS queries, trademark risk scanning, and registrar link routing. Automatically reads `LEAN_CANVAS.md` context if present.
 * **Usage:** `/grill-name [count=5] [domain_check=true]`
 
-### 3. 📸 Instagram Post Skill: Grill-Post (Command: `/grill-post`)
-* **Path:** `grill-post/`
-* **Features:** Step-by-step stepper workflow (validates `.env` keys, reads `LEAN_CANVAS.md` context, drafts SEO/GEO captions, automatically queries Facebook Page Places API for location IDs, supports optional API keys for text-only drafting, and publishes live or outputs manual draft copy).
-* **Usage:** `/grill-post [auto_approve=false]`
+### 3. 🎨 Logo Design Skill: Grill-Logo (Command: `/grill-logo`)
+* **Path:** `grill-logo/`
+* **Features:** Stepper workflow (checks `LEAN_CANVAS.md`), interactive style distillation and color palette selection, 3-option parallel image generator, visual HTML review catalog with multi-select checkboxes, and copyable refinement loop chat prompts.
+* **Usage:** `/grill-logo`
 
 ### 4. 📇 Business Card Skill: Grill-Card (Command: `/grill-card`)
 * **Path:** `grill-card/`
@@ -31,11 +31,16 @@ Welcome to **GrillBiz**, a premium bundle of open-source business helper skills 
 * **Features:** Mobile-first vertical stack link page generator. Features cohesive visual themes matching business cards, a local Wrangler CLI deployment script (`deploy.sh`) supporting interactive browser login or automated `.env` API tokens, and a pre-configured GitHub Actions workflow template.
 * **Usage:** `/grill-bio`
 
-### 6. 🔮 Jiuzilihuo Fengshui Skill (Command: `/grill-fengshui` - Pending)
+### 6. 📸 Instagram Post Skill: Grill-Post (Command: `/grill-post`)
+* **Path:** `grill-post/`
+* **Features:** Step-by-step stepper workflow (validates `.env` keys, reads `LEAN_CANVAS.md` context, drafts SEO/GEO captions, automatically queries Facebook Page Places API for location IDs, supports optional API keys for text-only drafting, and publishes live or outputs manual draft copy).
+* **Usage:** `/grill-post [auto_approve=false]`
+
+### 7. 🔮 Jiuzilihuo Fengshui Skill (Command: `/grill-fengshui` - Pending)
 * **Path:** `jiuzilihuo/`
 * **Features:** Evaluates project alignment with Period 9 (9-Purple-Fire) energy using industry profiles, color design matching, and Bazi birth chart compatibility calculations.
 
-### 7. 🤝 B Corp Skill (Command: `/grill-bcorp` - Pending)
+### 8. 🤝 B Corp Skill (Command: `/grill-bcorp` - Pending)
 * **Path:** `b-corp/`
 * **Features:** Interactive tracker guiding you through B Impact Assessment (BIA) pillars and providing customized company policy templates.
 

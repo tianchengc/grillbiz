@@ -1,509 +1,518 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Business Cards Showcase - {{COMPANY}}</title>
+    <title>GrillBiz · Business Cards — {{COMPANY}}</title>
+    <meta name="description" content="Business card matrix for {{COMPANY}} — all team members, all styles.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        /* Base Global Styling */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        :root {
+            --bg: #0b0d14;
+            --surface: #131620;
+            --surface-2: #1b1f2e;
+            --border: rgba(255,255,255,0.08);
+            --border-accent: rgba(0,210,255,0.3);
+            --text: #f0f4ff;
+            --text-muted: #7880a0;
+            --accent-blue: #00d2ff;
+            --accent-orange: #ff7b00;
+            --tab-active-bg: rgba(0,210,255,0.1);
+            --shadow: 0 8px 32px rgba(0,0,0,0.4);
+            --radius: 16px;
         }
+        [data-theme="light"] {
+            --bg: #f0f4fb;
+            --surface: #ffffff;
+            --surface-2: #e8edf8;
+            --border: rgba(0,0,0,0.08);
+            --border-accent: rgba(0,130,200,0.3);
+            --text: #0f1628;
+            --text-muted: #5a6282;
+            --tab-active-bg: rgba(0,130,200,0.08);
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
 
         body {
             font-family: 'Outfit', sans-serif;
-            background-color: #0b0c10;
-            color: #f1f3f9;
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
-            padding: 40px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            transition: background 0.3s, color 0.3s;
         }
 
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-        }
-
+        /* ── HEADER ── */
         header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 20px;
-        }
-
-        h1 {
-            font-size: 2.2rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #00d2ff, #ff7b00);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .controls {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .style-selector {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #f1f3f9;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            outline: none;
-        }
-
-        .style-selector:hover {
-            border-color: #00d2ff;
-        }
-
-        .btn-download-all {
-            background: linear-gradient(135deg, #00d2ff, #0084ff);
-            color: #fff;
-            border: none;
-            padding: 10px 25px;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.2);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .btn-download-all:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
-        }
-
-        /* Card Section Layout */
-        .cards-list {
-            display: flex;
-            flex-direction: column;
-            gap: 50px;
-        }
-
-        .team-member-section {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            padding: 25px;
-        }
-
-        .member-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            padding-bottom: 10px;
-        }
-
-        .member-info h3 {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: #00d2ff;
-        }
-
-        .member-info p {
-            font-size: 0.95rem;
-            color: #9ba3b2;
-        }
-
-        .card-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 30px;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .card-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-        }
-
-        /* Business Card Canvas (3.5" x 2" ratio, 1050x600px for print quality) */
-        .business-card {
-            width: 1050px;
-            height: 600px;
-            border-radius: 24px;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            padding: 60px;
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
-            transform: scale(0.48); /* Scaled down for screen display */
-            transform-origin: top center;
-            margin-bottom: -312px; /* Pull up elements below due to scaling */
-        }
-
-        .card-label {
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #9ba3b2;
-        }
-
-        .btn-save-card {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #f1f3f9;
-            padding: 8px 18px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-save-card:hover {
-            background: #00d2ff;
-            color: #0b0c10;
-            border-color: #00d2ff;
-        }
-
-        /* ---------------------------------------------------- */
-        /* THEME 1: GLASSMORPHISM */
-        /* ---------------------------------------------------- */
-        body.theme-glassmorphism {
-            background-color: #0d0f14;
-        }
-        .theme-glassmorphism .business-card {
-            background: linear-gradient(135deg, rgba(20, 24, 33, 0.8) 0%, rgba(10, 12, 18, 0.9) 100%);
-            border: 2px solid rgba(0, 210, 255, 0.25);
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6), inset 0 0 30px rgba(0, 210, 255, 0.05);
-        }
-        .theme-glassmorphism .business-card::before {
-            content: "";
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(0, 210, 255, 0.15) 0%, transparent 70%);
-            top: -100px;
-            left: -100px;
-            pointer-events: none;
-        }
-        .theme-glassmorphism .business-card::after {
-            content: "";
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(255, 123, 0, 0.1) 0%, transparent 70%);
-            bottom: -100px;
-            right: -100px;
-            pointer-events: none;
-        }
-
-        /* ---------------------------------------------------- */
-        /* THEME 2: MINIMALIST DARK */
-        /* ---------------------------------------------------- */
-        body.theme-dark-minimalist {
-            background-color: #050505;
-        }
-        .theme-dark-minimalist .business-card {
-            background: #0a0a0a;
-            border: 1px solid #1c1c1c;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
-        }
-        .theme-dark-minimalist .business-card .logo-container img {
-            filter: grayscale(100%) brightness(1.2);
-        }
-
-        /* ---------------------------------------------------- */
-        /* THEME 3: BOLD VIBRANT GRADIENT */
-        /* ---------------------------------------------------- */
-        body.theme-gradient-bold {
-            background-color: #120924;
-        }
-        .theme-gradient-bold .business-card {
-            background: linear-gradient(135deg, #1b0a3a 0%, #0d0f26 50%, #290a20 100%);
-            border: 3px solid rgba(255, 0, 128, 0.2);
-            box-shadow: 0 15px 50px rgba(255, 0, 128, 0.15);
-        }
-        .theme-gradient-bold .business-card::before {
-            content: "";
-            position: absolute;
+            position: sticky;
             top: 0;
-            left: 0;
-            width: 100%;
-            height: 10px;
-            background: linear-gradient(90deg, #ff007b, #00ffcc, #ff7b00);
+            z-index: 200;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
         }
 
-        /* ---------------------------------------------------- */
-        /* THEME 4: CLASSIC LIGHT */
-        /* ---------------------------------------------------- */
-        body.theme-classic-light {
-            background-color: #e2e8f0;
-            color: #1e293b;
-        }
-        .theme-classic-light h1 {
-            background: linear-gradient(135deg, #0f172a, #334155);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .theme-classic-light header {
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-        }
-        .theme-classic-light .team-member-section {
-            background: rgba(255, 255, 255, 0.6);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-        }
-        .theme-classic-light .business-card {
-            background: #ffffff;
-            border: 1px solid #cbd5e1;
-            color: #0f172a;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        }
-        .theme-classic-light .card-label {
-            color: #64748b;
-        }
-        .theme-classic-light .btn-save-card {
-            background: #0f172a;
-            color: #fff;
-            border: none;
-        }
-        .theme-classic-light .btn-save-card:hover {
-            background: #334155;
-            color: #fff;
-        }
-
-        /* ---------------------------------------------------- */
-        /* CARD INNER STRUCTURE (FRONT & BACK) */
-        /* ---------------------------------------------------- */
-        
-        /* Front Design Layout (Centered Logo & Company) */
-        .card-front {
+        .header-top {
+            padding: 14px 40px;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            width: 100%;
-            height: 100%;
-            text-align: center;
+            justify-content: space-between;
             gap: 20px;
         }
 
-        .card-front .logo-container img {
-            max-height: 150px;
-            max-width: 400px;
-            object-fit: contain;
+        .brand-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .brand-sub {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
         }
 
-        .card-front .company-name {
-            font-size: 2.8rem;
-            font-weight: 700;
-            letter-spacing: -1px;
-        }
-
-        /* Back Design Layout (Info Panel) */
-        .card-back {
+        .header-right {
             display: flex;
-            width: 100%;
-            height: 100%;
+            align-items: center;
+            gap: 12px;
+        }
+        .link-chip {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 5px 11px;
+            border-radius: 7px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .link-chip:hover { color: var(--accent-blue); border-color: var(--accent-blue); }
+
+        .theme-btn {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 6px 12px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .theme-btn:hover { color: var(--text); border-color: var(--accent-blue); }
+
+        .download-all-btn {
+            background: linear-gradient(135deg, var(--accent-blue), #0060cc);
+            color: #fff;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.82rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,210,255,0.2);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .download-all-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(0,210,255,0.35);
+        }
+
+        /* ── MEMBER TABS (sticky below header) ── */
+        .member-tabs-wrapper {
+            border-top: 1px solid var(--border);
+            padding: 0 40px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .member-tabs-wrapper::-webkit-scrollbar { display: none; }
+
+        /* Anchor-positioning animated underline */
+        .member-tabs {
+            display: flex;
+            gap: 4px;
+            position: relative;
+            list-style: none;
+            padding: 0;
+        }
+
+        /* Animated underline indicator using anchor-positioning */
+        .member-tabs::before {
+            content: '';
+            position: absolute;
+            block-size: 2px;
+            background: var(--accent-blue);
+            inset-block-end: 0;
+            position-anchor: --active-tab;
+            inset-inline-start: anchor(left);
+            inset-inline-end: anchor(right);
+            @media (prefers-reduced-motion: no-preference) {
+                transition: inset 0.25s ease;
+            }
+        }
+        /* Fallback for browsers without anchor positioning */
+        @supports not (position-anchor: auto) {
+            .member-tabs li.active a {
+                border-bottom: 2px solid var(--accent-blue);
+            }
+        }
+
+        .member-tabs li.active {
+            anchor-name: --active-tab;
+        }
+
+        .member-tabs li a {
+            display: block;
+            padding: 12px 20px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-decoration: none;
+            white-space: nowrap;
+            border-bottom: 2px solid transparent;
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+        .member-tabs li a:hover { color: var(--text); }
+        .member-tabs li.active a {
+            color: var(--accent-blue);
+            border-bottom-color: var(--accent-blue);
+        }
+
+        /* ── PAGE CONTENT ── */
+        .page {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 40px 80px;
+            display: flex;
+            flex-direction: column;
+            gap: 60px;
+        }
+
+        /* ── MEMBER SECTION ── */
+        .member-section {
+            scroll-margin-top: 120px;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        .member-heading {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        .member-name-heading {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+        .member-role-heading {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        /* ── STYLE ROW WITHIN MEMBER ── */
+        .style-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        .style-row {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .style-row-header {
+            display: flex;
             align-items: center;
             justify-content: space-between;
         }
-
-        .back-left {
+        .style-tag {
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--accent-blue);
+            background: rgba(0,210,255,0.08);
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(0,210,255,0.2);
+        }
+        .style-download-pair {
             display: flex;
-            flex-direction: column;
             gap: 10px;
         }
 
-        .back-left h2 {
-            font-size: 3.2rem;
-            font-weight: 700;
-            letter-spacing: -1px;
-            line-height: 1.1;
+        .save-btn {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 6px 14px;
+            border-radius: 7px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.2s, border-color 0.2s, background 0.2s;
+        }
+        .save-btn:hover {
+            color: var(--text);
+            border-color: var(--accent-blue);
+            background: var(--tab-active-bg);
         }
 
-        .back-left .role {
-            font-size: 1.4rem;
-            font-weight: 500;
-            color: #00d2ff;
-            margin-bottom: 20px;
+        /* ── CARD CANVAS PAIR ── */
+        .card-pair {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            align-items: flex-start;
         }
 
-        .theme-classic-light .back-left .role {
-            color: #0284c7;
+        .card-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .card-side-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-muted);
         }
 
+        /* 3.5" × 2" card: 1050×600px, scaled to 50% = 525×300px display */
+        .biz-card {
+            width: 1050px;
+            height: 600px;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            transform: scale(0.5);
+            transform-origin: top left;
+            margin-bottom: -300px;
+            margin-right: -525px;
+            flex-shrink: 0;
+        }
+
+        /* ── CARD INNER STRUCTURE ── */
+        .card-front {
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 60px; gap: 20px; text-align: center;
+            position: relative; z-index: 1;
+        }
+        .card-logo { display: flex; align-items: center; justify-content: center; }
+        .card-logo img {
+            max-height: 130px; max-width: 420px; object-fit: contain;
+            /* mix-blend-mode and border-radius injected per-style via DYNAMIC_STYLE_CSS */
+        }
+        .card-company {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 3rem; font-weight: 700; letter-spacing: -0.5px; line-height: 1;
+        }
+        .card-tagline { font-size: 1.2rem; font-weight: 400; opacity: 0.55; }
+
+        .card-back {
+            width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 60px; gap: 40px;
+            position: relative; z-index: 1;
+        }
+        .back-left { display: flex; flex-direction: column; gap: 10px; }
+        .back-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.8rem; font-weight: 700; letter-spacing: -0.5px; line-height: 1.1;
+        }
+        .back-role { font-size: 1.25rem; font-weight: 500; margin-bottom: 4px; }
+        .back-company-tag {
+            font-size: 0.85rem; font-weight: 700; letter-spacing: 1.5px;
+            text-transform: uppercase; opacity: 0.4;
+        }
         .back-right {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            text-align: right;
-            gap: 15px;
-            border-left: 2px solid var(--sub-border);
-            padding-left: 40px;
-            height: 80%;
-            justify-content: center;
+            display: flex; flex-direction: column; align-items: flex-end;
+            gap: 14px; padding-left: 40px;
+            border-left: 1px solid rgba(255,255,255,0.1);
+            min-width: 240px;
         }
+        .back-info-row { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; }
+        .back-info-label {
+            font-size: 0.7rem; font-weight: 700; letter-spacing: 1.2px;
+            text-transform: uppercase; opacity: 0.35;
+        }
+        .back-info-val { font-size: 1rem; font-weight: 500; }
 
-        .info-item {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .info-val {
-            font-size: 1.1rem;
-            font-weight: 500;
-        }
+        /* ── DYNAMIC STYLES (injected by card_parser.py) ── */
+        {{DYNAMIC_STYLE_CSS}}
     </style>
 </head>
-<body class="theme-glassmorphism">
-    <div class="container">
-        <header>
-            <h1 id="header-title">Business Cards: {{COMPANY}}</h1>
-            <div class="controls">
-                <select class="style-selector" onchange="changeTheme(this.value)">
-                    <option value="theme-glassmorphism">Glassmorphism Theme</option>
-                    <option value="theme-dark-minimalist">Minimalist Dark Theme</option>
-                    <option value="theme-gradient-bold">Gradient Bold Theme</option>
-                    <option value="theme-classic-light">Classic Light Theme</option>
-                </select>
-                <button class="btn-download-all" onclick="downloadAll()">Download All PNGs</button>
+<body>
+    <header>
+        <div class="header-top">
+            <div>
+                <div class="brand-title">GrillBiz</div>
+                <div class="brand-sub">Business Cards — {{COMPANY}}</div>
             </div>
-        </header>
-
-        <div class="cards-list" id="member-cards-container">
-            <!-- Dynamic Injection via JS -->
+            <div class="header-right">
+                <nav aria-label="Social links">
+                    <div style="display:flex;gap:8px;align-items:center;">
+                        <a href="https://github.com/tianchengc/grillbiz" target="_blank" rel="noopener noreferrer" class="link-chip">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.39.6.11.82-.26.82-.58v-2c-3.34.72-4.04-1.61-4.04-1.61-.54-1.38-1.33-1.74-1.33-1.74-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.48 1 .11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02.005 2.04.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.21.7.82.58C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                            GitHub
+                        </a>
+                        <span style="color:var(--border);font-size:0.8rem;">|</span>
+                        <a href="https://www.linkedin.com/in/tianchengc/" target="_blank" rel="noopener noreferrer" class="link-chip">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14zm1.78 13.02H3.56V9h3.56v11.45zM22.23 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.46c.98 0 1.77-.77 1.77-1.72V1.72C24 .77 23.21 0 22.23 0z"/></svg>
+                            LinkedIn
+                        </a>
+                    </div>
+                </nav>
+                <button class="download-all-btn" onclick="downloadAll()">
+                    <span>📥</span> Download All PNGs
+                </button>
+                <button class="theme-btn" onclick="toggleTheme()">
+                    <span id="theme-icon">☀️</span>
+                    <span id="theme-text">Light</span>
+                </button>
+            </div>
         </div>
-    </div>
+
+        <!-- Member navigation tabs -->
+        <div class="member-tabs-wrapper">
+            <ul class="member-tabs" role="tablist" id="member-tabs">
+                {{MEMBER_TABS_HTML}}
+            </ul>
+        </div>
+    </header>
+
+    <main class="page" id="main-content">
+        {{MEMBERS_HTML}}
+    </main>
+
+    <footer style="text-align: center; padding: 40px 20px; border-top: 1px solid var(--border); font-size: 0.85rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 8px; align-items: center; justify-content: center;">
+        <div>Designed & generated via <strong>GrillBiz Card Matrix</strong></div>
+        <div style="font-size: 0.78rem; opacity: 0.8;">Design System powered by <a href="https://uupm.cc" target="_blank" rel="noopener noreferrer" style="color: var(--accent-blue); text-decoration: none; font-weight: 600;">UI/UX Pro Max</a></div>
+    </footer>
 
     <script>
-        // The parsed JSON array of team cards injected from Python
         const cardsData = {{CARDS_DATA_JSON}};
 
-        function changeTheme(themeName) {
-            document.body.className = themeName;
+        // ── Theme toggle ──
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isNowLight = html.getAttribute('data-theme') === 'dark';
+            html.setAttribute('data-theme', isNowLight ? 'light' : 'dark');
+            document.getElementById('theme-icon').textContent = isNowLight ? '🌙' : '☀️';
+            document.getElementById('theme-text').textContent = isNowLight ? 'Dark' : 'Light';
         }
 
-        function renderCards() {
-            const container = document.getElementById('member-cards-container');
-            container.innerHTML = '';
+        // ── Tab active state sync on scroll ──
+        const tabs = document.querySelectorAll('.member-tabs li');
+        const sections = document.querySelectorAll('.member-section');
 
-            cardsData.forEach((member, index) => {
-                const section = document.createElement('div');
-                section.className = 'team-member-section';
-
-                section.innerHTML = `
-                    <div class="member-header">
-                        <div class="member-info">
-                            <h3>${member.name}</h3>
-                            <p>${member.role}</p>
-                        </div>
-                    </div>
-                    <div class="card-row">
-                        <!-- FRONT CARD -->
-                        <div class="card-wrapper">
-                            <span class="card-label">Front Side</span>
-                            <div class="business-card" id="card-front-${index}">
-                                <div class="card-front">
-                                    <div class="logo-container">
-                                        <img src="${member.logo_url}" alt="Company Logo" onerror="this.style.display='none'; document.getElementById('company-text-${index}').style.display='block';">
-                                    </div>
-                                    <div class="company-name" id="company-text-${index}" style="display:none;">${member.company}</div>
-                                </div>
-                            </div>
-                            <button class="btn-save-card" onclick="saveCard('card-front-${index}', '${member.name.replace(/\s+/g, '_')}_front')">Save Front PNG</button>
-                        </div>
-
-                        <!-- BACK CARD -->
-                        <div class="card-wrapper">
-                            <span class="card-label">Back Side</span>
-                            <div class="business-card" id="card-back-${index}">
-                                <div class="card-back">
-                                    <div class="back-left">
-                                        <h2>${member.name}</h2>
-                                        <div class="role">${member.role}</div>
-                                        <div class="info-item">
-                                            <span class="card-label" style="font-size:0.75rem;">Company</span>
-                                            <span class="info-val" style="font-weight:700;">${member.company}</span>
-                                        </div>
-                                    </div>
-                                    <div class="back-right">
-                                        <div class="info-item">
-                                            <span class="card-label" style="font-size:0.75rem;">Email</span>
-                                            <span class="info-val">${member.email}</span>
-                                        </div>
-                                        <div class="info-item">
-                                            <span class="card-label" style="font-size:0.75rem;">Phone</span>
-                                            <span class="info-val">${member.phone}</span>
-                                        </div>
-                                        <div class="info-item">
-                                            <span class="card-label" style="font-size:0.75rem;">Website</span>
-                                            <span class="info-val">${member.website}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <button class="btn-save-card" onclick="saveCard('card-back-${index}', '${member.name.replace(/\s+/g, '_')}_back')">Save Back PNG</button>
-                        </div>
-                    </div>
-                `;
-                container.appendChild(section);
+        function syncTab(activeId) {
+            tabs.forEach(tab => {
+                const isActive = tab.dataset.member === activeId;
+                tab.classList.toggle('active', isActive);
+                tab.querySelector('a').setAttribute('aria-current', isActive ? 'true' : 'false');
             });
         }
 
+        // Feature-detect scrollsnapchange, fallback to IntersectionObserver
+        if ('onscrollsnapchange' in HTMLElement.prototype) {
+            document.getElementById('main-content').addEventListener('scrollsnapchange', e => {
+                const snap = e.snapTargetBlock;
+                if (snap) syncTab(snap.dataset.memberId);
+            });
+        } else {
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) syncTab(entry.target.dataset.memberId);
+                });
+            }, { rootMargin: '-40% 0px -50% 0px', threshold: 0 });
+            sections.forEach(s => observer.observe(s));
+        }
+
+        // Tab click: smooth scroll to member section
+        tabs.forEach(tab => {
+            tab.querySelector('a').addEventListener('click', e => {
+                e.preventDefault();
+                const target = document.getElementById(`member-${tab.dataset.member}`);
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                syncTab(tab.dataset.member);
+            });
+        });
+
+        // Set first tab active on load
+        if (tabs.length > 0) syncTab(tabs[0].dataset.member);
+
+        // ── Save individual card ──
         function saveCard(cardId, filename) {
-            const cardEl = document.getElementById(cardId);
-            
-            // Remove transform scale temporary for clean screenshotting
-            const originalTransform = cardEl.style.transform;
-            const originalMargin = cardEl.style.marginBottom;
-            cardEl.style.transform = 'none';
-            cardEl.style.marginBottom = '0';
+            const el = document.getElementById(cardId);
+            if (!el) return;
+            const savedTransform = el.style.transform;
+            const savedMarginBottom = el.style.marginBottom;
+            const savedMarginRight = el.style.marginRight;
+            el.style.transform = 'none';
+            el.style.marginBottom = '0';
+            el.style.marginRight = '0';
 
-            html2canvas(cardEl, {
-                scale: 2, // High resolution scale factor
-                backgroundColor: null, // Transparent background if corners are rounded
-                useCORS: true // Allow loading external logos
-            }).then(canvas => {
-                // Restore original scale styles
-                cardEl.style.transform = originalTransform;
-                cardEl.style.marginBottom = originalMargin;
-
-                const link = document.createElement('a');
-                link.download = `${filename}.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
+            html2canvas(el, { scale: 2, backgroundColor: null, useCORS: true }).then(canvas => {
+                el.style.transform = savedTransform;
+                el.style.marginBottom = savedMarginBottom;
+                el.style.marginRight = savedMarginRight;
+                const a = document.createElement('a');
+                a.download = `${filename}.png`;
+                a.href = canvas.toDataURL('image/png');
+                a.click();
             });
         }
 
+        // ── Download all ──
         function downloadAll() {
-            cardsData.forEach((member, index) => {
-                setTimeout(() => {
-                    saveCard(`card-front-${index}`, `${member.name.replace(/\s+/g, '_')}_front`);
-                }, index * 1000);
-                setTimeout(() => {
-                    saveCard(`card-back-${index}`, `${member.name.replace(/\s+/g, '_')}_back`);
-                }, (index * 1000) + 500);
+            let delay = 0;
+            cardsData.forEach(member => {
+                member.styles.forEach(style => {
+                    setTimeout(() => saveCard(`card-${member.id}-${style.id}-front`, `${member.id}_${style.id}_front`), delay);
+                    delay += 600;
+                    setTimeout(() => saveCard(`card-${member.id}-${style.id}-back`, `${member.id}_${style.id}_back`), delay);
+                    delay += 600;
+                });
             });
         }
-
-        // Run
-        renderCards();
     </script>
 </body>
 </html>

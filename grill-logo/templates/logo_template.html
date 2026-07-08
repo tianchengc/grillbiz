@@ -189,13 +189,23 @@
         .logo-frame {
             width: 100%;
             aspect-ratio: 1;
-            background: #fff;
+            background-color: #eee;
+            background-image: linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc),
+                              linear-gradient(45deg, #ccc 25%, #fff 25%, #fff 75%, #ccc 75%, #ccc);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
             border: 1px solid var(--card-border);
+        }
+
+        [data-theme="dark"] .logo-frame {
+            background-color: #1a1f2c;
+            background-image: linear-gradient(45deg, #11141a 25%, transparent 25%, transparent 75%, #11141a 75%, #11141a),
+                              linear-gradient(45deg, #11141a 25%, #242b38 25%, #242b38 75%, #11141a 75%, #11141a);
         }
 
         .logo-img {

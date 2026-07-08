@@ -11,7 +11,7 @@ except ImportError:
     sys.exit(1)
 
 # Initialize FastMCP Server
-mcp = FastMCP("grillbiz", version="1.1.0")
+mcp = FastMCP("grillbiz", version="1.2.0")
 
 # ==========================================================
 # 🛠️ MCP TOOLS (Action Executions)
@@ -111,6 +111,43 @@ def generate_business_card_page(company: str, cards_data_json: str, output_path:
         return f"Error generating business cards page: {str(e)}"
 
 @mcp.tool()
+def compile_card_gallery(profile_name: str) -> str:
+    """
+    Generate the style gallery HTML page for a business card profile.
+    Uses state.json card_styles if present; falls back to built-in defaults.
+
+    Args:
+        profile_name: The profile name (maps to grillbiz-profiles/cards/{profile_name}/state.json).
+    """
+    script_path = os.path.join(os.path.dirname(__file__), "grill-card", "card_parser.py")
+    try:
+        res = subprocess.run(
+            [sys.executable, script_path, profile_name, "gallery"],
+            capture_output=True, text=True, check=True
+        )
+        return res.stdout
+    except subprocess.CalledProcessError as e:
+        return f"Error compiling card gallery: {e.stderr}"
+
+@mcp.tool()
+def compile_card_matrix(profile_name: str) -> str:
+    """
+    Generate the final team × liked-styles card matrix HTML page for a business card profile.
+
+    Args:
+        profile_name: The profile name (maps to grillbiz-profiles/cards/{profile_name}/state.json).
+    """
+    script_path = os.path.join(os.path.dirname(__file__), "grill-card", "card_parser.py")
+    try:
+        res = subprocess.run(
+            [sys.executable, script_path, profile_name, "cards"],
+            capture_output=True, text=True, check=True
+        )
+        return res.stdout
+    except subprocess.CalledProcessError as e:
+        return f"Error compiling card matrix: {e.stderr}"
+
+@mcp.tool()
 def render_business_cards(html_path: str, output_dir: str, theme: str = "theme-glassmorphism") -> str:
     """
     Open the generated HTML business card list page using Playwright and export high-res PNG crops of each card.
@@ -130,66 +167,103 @@ def render_business_cards(html_path: str, output_dir: str, theme: str = "theme-g
     except Exception as e:
         return f"Error rendering cards: {str(e)}"
 
+def _get_profile_manager():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "profile_manager", 
+        os.path.join(os.path.dirname(__file__), "grill-biz", "profile_manager.py")
+    )
+    profile_manager = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(profile_manager)
+    return profile_manager
+
 @mcp.tool()
-def generate_bio_page(
-    company: str,
-    bio_description: str,
-    logo_url: str,
-    social_data_json: str,
-    links_data_json: str,
-    products_data_json: str,
-    blogs_data_json: str,
-    layout_name: str,
-    output_path: str
-) -> str:
+def compile_bio_gallery(profile_name: str) -> str:
     """
-    Generate a mobile-first Instagram bio link website page.
+    Generate the dynamic bio style gallery HTML preview page for a profile.
     
     Args:
-        company: The name of the company.
-        bio_description: A short 1-2 sentence tagline/description.
-        logo_url: URL or local path to the company logo.
-        social_data_json: JSON string of social links. Format: [{"platform": "OnlyFans", "url": "https://..."}]
-        links_data_json: JSON string of primary CTA links. Format: [{"title": "Shop", "url": "https://..."}]
-        products_data_json: JSON string of products. Format: [{"title": "P1", "description": "D1", "price": "$10", "image_url": "..."}]
-        blogs_data_json: JSON string of blog posts. Format: [{"title": "B1", "description": "D1", "url": "...", "image_url": "..."}]
-        layout_name: Layout template style name ('classic_stack' or 'profile_card').
-        output_path: Absolute path to write the compiled bio HTML page to.
+        profile_name: The business profile name (maps to grillbiz-profiles/{profile_name}/state.json).
     """
-    # Select template file
-    layout_file = "layout_classic_stack.html" if layout_name == "classic_stack" else "layout_profile_card.html"
-    template_path = os.path.join(os.path.dirname(__file__), "grill-bio", "templates", layout_file)
-    
-    if not os.path.exists(template_path):
-        return f"Error: Layout template '{layout_name}' not found at {template_path}"
-        
+    script_path = os.path.join(os.path.dirname(__file__), "grill-bio", "bio_parser.py")
     try:
-        # Validate all JSON inputs
-        json.loads(social_data_json)
-        json.loads(links_data_json)
-        json.loads(products_data_json)
-        json.loads(blogs_data_json)
-        
-        with open(template_path, "r", encoding="utf-8") as f:
-            content = f.read()
-            
-        content = content.replace("{{COMPANY}}", company)
-        content = content.replace("{{BIO_DESCRIPTION}}", bio_description)
-        content = content.replace("{{LOGO_URL}}", logo_url)
-        content = content.replace("{{SOCIAL_DATA_JSON}}", social_data_json)
-        content = content.replace("{{LINKS_DATA_JSON}}", links_data_json)
-        content = content.replace("{{PRODUCTS_DATA_JSON}}", products_data_json)
-        content = content.replace("{{BLOGS_DATA_JSON}}", blogs_data_json)
-        
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
-        with open(output_path, "w", encoding="utf-8") as f:
-            f.write(content)
-            
-        return f"Success: Generated mobile bio page ({layout_name}) at {output_path}"
-    except json.JSONDecodeError as je:
-        return f"Error: Invalid JSON input format: {str(je)}"
+        res = subprocess.run(
+            [sys.executable, script_path, profile_name, "gallery"],
+            capture_output=True, text=True, check=True
+        )
+        return res.stdout
+    except subprocess.CalledProcessError as e:
+        return f"Error compiling bio gallery: {e.stderr}"
+
+@mcp.tool()
+def compile_bio_page(profile_name: str) -> str:
+    """
+    Generate the final compiled dynamic bio landing website HTML page for a profile.
+    
+    Args:
+        profile_name: The business profile name (maps to grillbiz-profiles/{profile_name}/state.json).
+    """
+    script_path = os.path.join(os.path.dirname(__file__), "grill-bio", "bio_parser.py")
+    try:
+        res = subprocess.run(
+            [sys.executable, script_path, profile_name, "bio"],
+            capture_output=True, text=True, check=True
+        )
+        return res.stdout
+    except subprocess.CalledProcessError as e:
+        return f"Error compiling bio page: {e.stderr}"
+
+@mcp.tool()
+def list_business_profiles() -> str:
+    """
+    List all active business profiles currently stored in the workspace.
+    """
+    try:
+        pm = _get_profile_manager()
+        profiles = pm.list_profiles()
+        return json.dumps(profiles)
     except Exception as e:
-        return f"Error generating bio page: {str(e)}"
+        return f"Error listing profiles: {str(e)}"
+
+@mcp.tool()
+def select_business_profile(profile_name: str = None) -> str:
+    """
+    Check and select the active business profile name. If omitted and ambiguous, returns list of options.
+    
+    Args:
+        profile_name: (Optional) The specific business profile name.
+    """
+    try:
+        pm = _get_profile_manager()
+        selected = pm.select_profile(profile_name)
+        if selected:
+            return json.dumps({"status": "selected", "profile": selected})
+        else:
+            return json.dumps({"status": "ambiguous", "profiles": pm.list_profiles()})
+    except Exception as e:
+        return f"Error selecting profile: {str(e)}"
+
+
+
+@mcp.tool()
+def remove_image_background(input_path: str, output_path: str = "") -> str:
+    """
+    Remove the background from a logo or photo image using the rembg AI model.
+    Outputs a transparent RGBA PNG. Auto-installs rembg if not present.
+
+    Args:
+        input_path: Absolute or workspace-relative path to the source image (PNG, JPG, WEBP).
+        output_path: (Optional) Where to save the result. Defaults to same path with '_nobg.png' suffix.
+    """
+    script_path = os.path.join(os.path.dirname(__file__), "grill-background", "remove_bg.py")
+    cmd = [sys.executable, script_path, input_path]
+    if output_path:
+        cmd.append(output_path)
+    try:
+        res = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        return res.stdout
+    except subprocess.CalledProcessError as e:
+        return f"Error removing background: {e.stderr or e.stdout}"
 
 
 # ==========================================================
@@ -227,6 +301,11 @@ def grill_card_workflow() -> str:
 def grill_bio_workflow() -> str:
     """Load the Grill-Bio mobile bio link website builder and deployment workflow."""
     return _read_skill_instructions("grill-bio")
+
+@mcp.prompt()
+def grill_background_workflow() -> str:
+    """Load the Grill-Background image background removal skill instructions."""
+    return _read_skill_instructions("grill-background")
 
 @mcp.prompt()
 def grill_post_workflow() -> str:

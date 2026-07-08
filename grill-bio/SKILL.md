@@ -1,57 +1,59 @@
 ---
 name: grill-bio
-description: Instagram Bio Link Generator (Grill-Bio) creating mobile-first static link pages matching the company branding. Supports automated Cloudflare deployment.
+description: Dynamic Bio Link Generator (Grill-Bio) — interactive, step-by-step wizard creating mobile-first bio landing pages styling with ui-ux-pro-max-skill design intelligence.
 ---
 
 # Grill-Bio (`/grill-bio`)
 
-You are a mobile UI/UX designer and web developer. Guide the user through a step-by-step stepper workflow to build and deploy a responsive, mobile-first Instagram Bio Link webpage.
+You are a mobile UI/UX designer and web developer. Guide the user through a step-by-step interactive stepper workflow to build and deploy a responsive, mobile-first bio link website page.
 
 ---
 
 ## Workflow Steps
 
-### Step 1: Context Check & Link Collection
-1. Check if `LEAN_CANVAS.md` exists in the workspace root.
-   - If present, read it to extract the company name and unique value proposition (for the bio description).
-   - If missing, prompt:
-     > *"Tip: I see no active business profile (`LEAN_CANVAS.md`). Running `/grill-biz` first helps me generate your company tagline automatically. Or you can describe it to me manually."*
-2. Prompt the user for:
-   - **Company details:** Company Name, Tagline/Description (defaults to the UVP from LEAN_CANVAS.md).
-   - **Social Platforms list (Icon grid):** Patreon, OnlyFans, Instagram, Facebook, Twitter, GitHub, etc.
-   - **Core Action Links (Pills):** Custom URLs with titles.
-   - **Products (optional list):** Products with title, description, price, url, and image_url.
-   - **Blogs/Updates (optional list):** Articles with title, description, url, and image_url.
-   - **Logo path:** Path to company logo (defaults to `../../grillbiz_logo.png` if it exists at the root).
-3. Ask the user to choose their layout:
-   - **Classic Stack:** Vertical list of buttons, best for direct redirects.
-   - **Profile Hub:** Visual layout with a card focus, social badges, and grid gallery feed (resembling an Instagram feed) for products and updates.
+### Step 1: Context Check & Business Info
+1. Check if the unified profile directory exists. If not, prompt:
+   - *"If not clear which business profile to work on, let's select or initialize a profile (e.g. 'default')."*
+2. Read the profile's `state.json` (using `profile_manager.py`) to auto-fill:
+   - Company name, Tagline/Description, Contact information.
+3. Check for logos inside the profile's `logos/` folder.
+   - If a logo is present, use it. If it has a solid/white background, the logo compiler will automatically have stripped it with `grill-background`.
+   - If missing, recommend running `/grill-logo` first, or proceed with text-only fallback.
+4. Verify details with the user before proceeding to link setup.
 
-### Step 2: HTML Bio Page Generation
-Read the selected template from the codebase:
-* For Classic Stack: [grill-bio/templates/layout_classic_stack.html](file://./templates/layout_classic_stack.html)
-* For Profile Hub: [grill-bio/templates/layout_profile_card.html](file://./templates/layout_profile_card.html)
+### Step 2: Content Collection (Links & Feed)
+1. Ask the user for:
+   - **Social Sharing Links:** Patreon, OnlyFans, Instagram, GitHub, LinkedIn, etc.
+   - **Core Action Pills:** Main redirects with custom titles (e.g., "Visit Our Shop", "Join Newsletter").
+   - **Featured Products (optional):** Title, description, price, url, and image url.
+   - **Latest Blogs/Updates (optional):** Title, description, url, and image url.
+2. Confirm the complete collected details before proceeding to style search.
 
-Perform search and replace on the template variables:
-* `{{COMPANY}}` -> Company Name.
-* `{{BIO_DESCRIPTION}}` -> Tagline/Description.
-* `{{LOGO_URL}}` -> Relative logo image path (e.g. `../../grillbiz_logo.png`).
-* `{{SOCIAL_DATA_JSON}}` -> JSON string array of social platforms.
-* `{{LINKS_DATA_JSON}}` -> JSON string array of core action links.
-* `{{PRODUCTS_DATA_JSON}}` -> JSON string array of product items.
-* `{{BLOGS_DATA_JSON}}` -> JSON string array of blog updates.
+### Step 3: Design Intelligence Search & Taste Selection
+1. Run the `ui-ux-pro-max-skill` design generator to search for styling recommendations:
+   `python3 src/ui-ux-pro-max/scripts/search.py "<company concepts>" --design-system`
+2. Present the recommended styling vibe (e.g. Neumorphic lavender/sage, Glassmorphic tech blue, Organic biophilic cream/forest) and font pairings (Outfit, Cormorant Garamond, Space Grotesk) to the user.
+3. Formulate 4-6 dynamic `BioStyle` JSON objects matching the user's taste and the generated recommendations, and save them in the profile's `state.json` under `"bio_styles"`.
 
-Write the output file in the workspace to:
-`grillbiz-profiles/bio/{profile_name}_bio.html`
+### Step 4: Visual Gallery Preview & Iteration Loop
+1. Run the compiler tool to generate the style gallery HTML:
+   `python3 grill-bio/bio_parser.py <profile_name> gallery`
+2. Present the compiled HTML link to the user:
+   `grillbiz-profiles/{profile_name}/bio/{profile_name}_style_gallery.html`
+3. Ask the user to open it in their browser:
+   - They can preview 4-6 mobile-sized screens side-by-side.
+   - Click the heart checkbox on the layout they like best.
+   - If they want changes, copy the **Feedback Prompt** from the bottom and paste it in chat (Round iteration loop).
+   - If they are happy, click **Proceed → Generate Bio Site**.
 
-### Step 3: Cloudflare Pages Deployment
-Assist the user in publishing their new bio page to the web:
-1. **Interactive local deployment:** Ask the user if they want to run the deployment helper script:
-   `./grill-bio/scripts/deploy.sh grillbiz-profiles/bio/ [project_name]`
-   - Explain that if `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` are set in `.env`, deployment will be fully automatic.
-   - If not set, Wrangler will open their browser to log in interactively and deploy.
-2. **GitHub Actions automation:** Ask if they want to enable automated CI/CD. If yes, copy the workflow template from:
-   `grill-bio/templates/deploy-bio.yml.template`
-   to the user's active workspace root at:
-   `.github/workflows/deploy-bio.yml`
-   This will automatically build and deploy their bio links whenever they git-push updates to GitHub.
+### Step 5: Final Page Compilation & Cloudflare Pages Deployment
+1. When the user proceeds with a liked style ID:
+   - Update `"liked_bio_styles"` in `state.json`.
+   - Compile the final single-page HTML:
+     `python3 grill-bio/bio_parser.py <profile_name> bio`
+2. Present the final compiled website link:
+   `grillbiz-profiles/{profile_name}/bio/{profile_name}_bio.html`
+3. Assist the user in deploying:
+   - Run Wrangler deployment:
+     `npx wrangler pages deploy grillbiz-profiles/{profile_name}/bio/ --project-name={project_name}`
+   - Alternatively, add automated GitHub Actions workflow.

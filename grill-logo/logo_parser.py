@@ -2,24 +2,25 @@
 import sys
 import os
 import json
+import importlib.util
 
 def generate_logo_html(profile_name):
     # Locate paths
     script_dir = os.path.dirname(os.path.realpath(__file__))
     workspace_dir = os.path.dirname(script_dir)
     
-    # State file path
-    state_dir = os.path.join(workspace_dir, "grillbiz-profiles", "logos", profile_name)
-    state_file = os.path.join(state_dir, "state.json")
+    # Import profile_manager dynamically to handle hyphenated folder name
+    spec = importlib.util.spec_from_file_location(
+        "profile_manager", 
+        os.path.join(workspace_dir, "grill-biz", "profile_manager.py")
+    )
+    profile_manager = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(profile_manager)
     
-    # Check if state exists
-    if not os.path.exists(state_file):
-        print(f"Error: state.json not found at {state_file}")
-        sys.exit(1)
-        
-    with open(state_file, "r", encoding="utf-8") as f:
-        logos_data = json.load(f)
-        
+    # Load unified state
+    state = profile_manager.load_profile_state(profile_name)
+    logos_data = state.get("logos", [])
+    
     # Read template
     template_path = os.path.join(script_dir, "templates", "logo_template.html")
     if not os.path.exists(template_path):
@@ -35,8 +36,9 @@ def generate_logo_html(profile_name):
         logo_id = item["id"]
         round_num = item["round"]
         liked = item.get("liked", False)
+        
         # Relative path from the output HTML file
-        image_src = f"{profile_name}/{os.path.basename(item['path'])}"
+        image_src = item["path"]
         
         pinned_class = "pinned" if liked else ""
         active_class = "active" if liked else ""
@@ -69,8 +71,8 @@ def generate_logo_html(profile_name):
     rendered = rendered.replace("{{TITLE}}", profile_name.upper())
     rendered = rendered.replace("{{LOGOS_HTML}}", logos_html)
     
-    # Write output HTML file
-    output_html_path = os.path.join(workspace_dir, "grillbiz-profiles", "logos", f"{profile_name}_logos.html")
+    # Write output HTML file in the unified profile directory
+    output_html_path = os.path.join(workspace_dir, "grillbiz-profiles", profile_name, f"{profile_name}_logos.html")
     os.makedirs(os.path.dirname(output_html_path), exist_ok=True)
     
     with open(output_html_path, "w", encoding="utf-8") as f:

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrillBiz · Card Style Gallery — {{COMPANY}}</title>
+    <meta name="description" content="Select your preferred business card styles for {{COMPANY}}.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* ── Design Tokens ── */
+        :root {
+            --bg: #0b0d14;
+            --surface: #131620;
+            --surface-2: #1b1f2e;
+            --border: rgba(255,255,255,0.08);
+            --border-accent: rgba(0,210,255,0.28);
+            --text: #f0f4ff;
+            --text-muted: #7880a0;
+            --accent-blue: #00d2ff;
+            --accent-orange: #ff7b00;
+            --shadow: 0 8px 32px rgba(0,0,0,0.4);
+            --radius: 16px;
+        }
+        [data-theme="light"] {
+            --bg: #f0f4fb;
+            --surface: #ffffff;
+            --surface-2: #e8edf8;
+            --border: rgba(0,0,0,0.08);
+            --border-accent: rgba(0,130,200,0.28);
+            --text: #0f1628;
+            --text-muted: #5a6282;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* ── HEADER ── */
+        header {
+            position: sticky; top: 0; z-index: 100;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 16px 40px;
+            display: flex; align-items: center; justify-content: space-between; gap: 20px;
+        }
+        .brand { display: flex; flex-direction: column; }
+        .brand-title {
+            font-size: 1.5rem; font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-orange));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .brand-sub {
+            font-size: 0.72rem; font-weight: 600; color: var(--text-muted);
+            letter-spacing: 1.5px; text-transform: uppercase;
+        }
+        .header-right { display: flex; align-items: center; gap: 12px; }
+        .links { display: flex; align-items: center; gap: 8px; }
+        .link-chip {
+            color: var(--text-muted); text-decoration: none;
+            font-size: 0.82rem; font-weight: 600;
+            padding: 6px 12px; border-radius: 8px;
+            background: var(--surface-2); border: 1px solid var(--border);
+            display: flex; align-items: center; gap: 5px;
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .link-chip:hover { color: var(--accent-blue); border-color: var(--accent-blue); }
+        .link-divider { color: var(--border); font-size: 0.8rem; }
+        .theme-btn {
+            background: var(--surface-2); border: 1px solid var(--border);
+            color: var(--text-muted); padding: 7px 14px; border-radius: 8px;
+            cursor: pointer; font-size: 0.82rem; font-weight: 600;
+            display: flex; align-items: center; gap: 6px;
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .theme-btn:hover { color: var(--text); border-color: var(--accent-blue); }
+
+        /* ── PAGE ── */
+        .page {
+            max-width: 1400px; margin: 0 auto;
+            padding: 40px 40px 130px;
+            display: flex; flex-direction: column; gap: 32px;
+        }
+
+        /* ── INSTRUCTION BANNER ── */
+        .instruction-banner {
+            background: var(--surface); border: 1px solid var(--border-accent);
+            border-radius: var(--radius); padding: 22px 28px;
+            display: flex; gap: 16px; align-items: flex-start;
+        }
+        .instruction-icon { font-size: 1.5rem; flex-shrink: 0; }
+        .instruction-text strong {
+            display: block; font-size: 1rem; font-weight: 700;
+            color: var(--accent-orange); margin-bottom: 4px;
+        }
+        .instruction-text p { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); }
+
+        /* ── SECTION HEADING ── */
+        .section-heading {
+            font-size: 1.1rem; font-weight: 700; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 1.5px;
+            padding-bottom: 12px; border-bottom: 1px solid var(--border);
+        }
+
+        /* ── STYLE GRID ── */
+        .style-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+            gap: 28px;
+        }
+
+        /* ── STYLE CARD SHELL ── */
+        .style-card {
+            background: var(--surface); border: 2px solid var(--border);
+            border-radius: var(--radius); overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s;
+            display: flex; flex-direction: column;
+        }
+        .style-card:hover { transform: translateY(-3px); box-shadow: 0 20px 50px rgba(0,0,0,0.45); }
+        .style-card.selected {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(0,210,255,0.15), var(--shadow);
+        }
+        .style-card-header {
+            padding: 16px 20px 12px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+        .style-name { font-size: 0.95rem; font-weight: 700; color: var(--text); }
+        .style-round {
+            font-size: 0.75rem; font-weight: 600; color: var(--text-muted);
+            background: var(--surface-2); padding: 3px 10px; border-radius: 20px;
+        }
+
+        /* Checkered preview background */
+        .card-preview-row {
+            padding: 30px 24px;
+            display: flex; gap: 16px; justify-content: center; align-items: flex-start;
+            background: repeating-conic-gradient(var(--surface-2) 0% 25%, transparent 0% 50%) 0 0 / 16px 16px;
+            flex-wrap: wrap;
+        }
+        .card-preview-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .preview-label {
+            font-size: 0.68rem; font-weight: 700; letter-spacing: 1px;
+            text-transform: uppercase; color: var(--text-muted);
+        }
+
+        /* Business card canvas — 700×400px, displayed at 50% = 350×200px */
+        .biz-card {
+            width: 700px; height: 400px;
+            position: relative; overflow: hidden;
+            transform: scale(0.5); transform-origin: top center;
+            margin-bottom: -200px; flex-shrink: 0;
+        }
+
+        /* ── CARD INNER STRUCTURE ── */
+        .card-front {
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 40px; gap: 14px; text-align: center;
+            position: relative; z-index: 1;
+        }
+        .card-logo { display: flex; align-items: center; justify-content: center; }
+        .card-logo img {
+            max-height: 80px; max-width: 260px; object-fit: contain;
+            /* mix-blend-mode and border-radius injected per-style via DYNAMIC_STYLE_CSS */
+        }
+        .card-company {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; line-height: 1;
+        }
+        .card-tagline { font-size: 0.9rem; font-weight: 400; opacity: 0.55; }
+
+        .card-back {
+            width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 40px 48px; position: relative; z-index: 1; gap: 28px;
+        }
+        .back-left { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+        .back-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; line-height: 1.1;
+        }
+        .back-role { font-size: 1rem; font-weight: 500; margin-bottom: 4px; }
+        .back-company-tag {
+            font-size: 0.7rem; font-weight: 700; letter-spacing: 1.5px;
+            text-transform: uppercase; opacity: 0.4;
+        }
+        .back-right {
+            display: flex; flex-direction: column; align-items: flex-end;
+            gap: 10px; padding-left: 28px; border-left: 1px solid rgba(255,255,255,0.1);
+            min-width: 180px;
+        }
+        .back-info-row { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; }
+        .back-info-label {
+            font-size: 0.6rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase;
+        }
+        .back-info-val { font-size: 0.82rem; font-weight: 500; }
+
+        /* ── FOOTER ── */
+        .style-card-footer {
+            padding: 14px 20px;
+            display: flex; justify-content: flex-end;
+            border-top: 1px solid var(--border); gap: 10px;
+        }
+        .select-btn {
+            padding: 9px 20px; border-radius: 8px; font-weight: 700; font-size: 0.875rem;
+            cursor: pointer; border: 2px solid var(--border);
+            background: transparent; color: var(--text-muted);
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            transition: all 0.2s;
+        }
+        .select-btn:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+        .select-btn.active {
+            background: var(--accent-blue); border-color: var(--accent-blue); color: #fff;
+        }
+
+        /* ── FEEDBACK PANEL (sticky bottom) ── */
+        .feedback-panel {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: var(--surface); border-top: 1px solid var(--border-accent);
+            padding: 14px 40px; display: flex; align-items: center; gap: 16px;
+            z-index: 200; backdrop-filter: blur(12px);
+            box-shadow: 0 -8px 32px rgba(0,0,0,0.3);
+        }
+        .feedback-selected { font-size: 0.85rem; color: var(--text-muted); white-space: nowrap; flex-shrink: 0; }
+        .feedback-selected strong { color: var(--accent-orange); font-weight: 700; }
+        .feedback-input {
+            flex: 1; background: var(--surface-2); border: 1px solid var(--border);
+            color: var(--text); border-radius: 10px; padding: 10px 16px;
+            font-family: 'Outfit', sans-serif; font-size: 0.875rem;
+            resize: none; height: 42px; line-height: 1.3;
+        }
+        .feedback-input:not([readonly]):focus { outline: none; border-color: var(--accent-blue); }
+        .action-btn {
+            flex-shrink: 0; border: none; padding: 10px 20px; border-radius: 10px;
+            font-weight: 700; font-size: 0.82rem; cursor: pointer;
+            display: flex; align-items: center; gap: 7px;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .action-btn:hover { transform: translateY(-1px); }
+        .action-btn:active { transform: translateY(0); }
+        .copy-btn {
+            background: linear-gradient(135deg, var(--accent-orange), #e05500);
+            color: #fff; box-shadow: 0 4px 14px rgba(255,123,0,0.3);
+        }
+        .proceed-btn {
+            background: linear-gradient(135deg, var(--accent-blue), #0060cc);
+            color: #fff; box-shadow: 0 4px 14px rgba(0,210,255,0.2);
+        }
+
+        /* ── DYNAMIC STYLES (injected by card_parser.py) ── */
+        {{DYNAMIC_STYLE_CSS}}
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand">
+            <div class="brand-title">GrillBiz</div>
+            <div class="brand-sub">Card Style Gallery — {{COMPANY}}</div>
+        </div>
+        <div class="header-right">
+            <nav class="links" aria-label="Social links">
+                <a href="https://github.com/tianchengc/grillbiz" target="_blank" rel="noopener noreferrer" class="link-chip">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.39.6.11.82-.26.82-.58v-2c-3.34.72-4.04-1.61-4.04-1.61-.54-1.38-1.33-1.74-1.33-1.74-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.48 1 .11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02.005 2.04.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.21.7.82.58C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                    GitHub
+                </a>
+                <span class="link-divider">|</span>
+                <a href="https://www.linkedin.com/in/tianchengc/" target="_blank" rel="noopener noreferrer" class="link-chip">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14zm1.78 13.02H3.56V9h3.56v11.45zM22.23 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.46c.98 0 1.77-.77 1.77-1.72V1.72C24 .77 23.21 0 22.23 0z"/></svg>
+                    LinkedIn
+                </a>
+            </nav>
+            <button class="theme-btn" onclick="toggleTheme()">
+                <span id="theme-icon">☀️</span> <span id="theme-text">Light</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="page">
+        <div class="instruction-banner" role="note">
+            <div class="instruction-icon">👆</div>
+            <div class="instruction-text">
+                <strong>Style Distillation — Select All Styles You Like</strong>
+                <p>Each card shows a front (brand) and back (contact info) preview. Select the styles that resonate with your brand. When satisfied, click <strong>Proceed</strong> to generate the full team card matrix, or copy the refinement prompt to request new style variations.</p>
+            </div>
+        </div>
+
+        <div class="section-heading">Style Options — Round {{ROUND}}</div>
+
+        <div class="style-grid" id="style-grid">
+            {{STYLES_HTML}}
+        </div>
+        <footer style="text-align: center; margin-top: 60px; padding-top: 30px; border-top: 1px solid var(--border); font-size: 0.85rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 6px; align-items: center;">
+            <div>Designed & generated via <strong>GrillBiz Card Gallery</strong></div>
+            <div style="font-size: 0.78rem; opacity: 0.8;">Design System powered by <a href="https://uupm.cc" target="_blank" rel="noopener noreferrer" style="color: var(--accent-blue); text-decoration: none; font-weight: 600;">UI/UX Pro Max</a></div>
+        </footer>
+    </main>
+
+    <div class="feedback-panel" role="complementary" aria-label="Style selection">
+        <div class="feedback-selected">Liked: <strong id="selected-display">None</strong></div>
+        <textarea class="feedback-input" id="feedback-prompt" readonly
+            placeholder="Select styles above to generate a feedback prompt…">[GRILL-CARD FEEDBACK] No style selected.</textarea>
+        <button class="action-btn copy-btn" onclick="copyFeedback()"><span>📋</span> Copy Prompt</button>
+        <button class="action-btn proceed-btn" onclick="copyProceed()"><span>✅</span> Proceed → Generate Cards</button>
+    </div>
+
+    <script>
+        const selectedStyles = new Set();
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const toLight = html.getAttribute('data-theme') === 'dark';
+            html.setAttribute('data-theme', toLight ? 'light' : 'dark');
+            document.getElementById('theme-icon').textContent = toLight ? '🌙' : '☀️';
+            document.getElementById('theme-text').textContent = toLight ? 'Dark' : 'Light';
+        }
+
+        function toggleStyle(styleId) {
+            const card = document.getElementById(`style-card-${styleId}`);
+            const btn = document.getElementById(`select-btn-${styleId}`);
+            if (selectedStyles.has(styleId)) {
+                selectedStyles.delete(styleId);
+                card.classList.remove('selected');
+                btn.classList.remove('active');
+                btn.innerHTML = '<span>🤍</span> Select Style';
+            } else {
+                selectedStyles.add(styleId);
+                card.classList.add('selected');
+                btn.classList.add('active');
+                btn.innerHTML = '<span>❤️</span> Selected';
+            }
+            updateFeedback();
+        }
+
+        function updateFeedback() {
+            const ids = Array.from(selectedStyles);
+            document.getElementById('selected-display').textContent = ids.length ? ids.join(', ').toUpperCase() : 'None';
+            const ta = document.getElementById('feedback-prompt');
+            if (ids.length === 0) {
+                ta.value = '[GRILL-CARD FEEDBACK] No style selected.';
+                ta.readOnly = true;
+            } else {
+                ta.value = `[GRILL-CARD FEEDBACK] Liked: ${ids.join(', ')}. Style notes: [Describe what you like about these and how to refine or expand…]`;
+                ta.readOnly = false;
+            }
+        }
+
+        function copyFeedback() {
+            const ta = document.getElementById('feedback-prompt');
+            if (ta.readOnly) { alert('Please select at least one style first.'); return; }
+            navigator.clipboard.writeText(ta.value).then(() => flashBtn('.copy-btn', '✅ Copied!'));
+        }
+
+        function copyProceed() {
+            const ids = Array.from(selectedStyles);
+            if (!ids.length) { alert('Please select at least one style first.'); return; }
+            const prompt = `[GRILL-CARD PROCEED] Generate full team card matrix with styles: ${ids.join(', ')}`;
+            navigator.clipboard.writeText(prompt).then(() => flashBtn('.proceed-btn', '📋 Paste to Chat!'));
+        }
+
+        function flashBtn(selector, msg) {
+            const btn = document.querySelector(selector);
+            const orig = btn.innerHTML;
+            btn.innerHTML = `<span>${msg}</span>`;
+            setTimeout(() => btn.innerHTML = orig, 2500);
+        }
+    </script>
+</body>
+</html>

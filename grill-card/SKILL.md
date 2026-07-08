@@ -63,29 +63,14 @@ Step 5 → Style Gallery Loop → Final Card Matrix
 
 ---
 
-## Step 3: Style Preferences
+## Step 3: Style Preferences & AI Generation
 
-Ask the user the following multi-choice questions to distill their style taste:
-
-**Q1 — Card Vibe (pick one):**
-- Dark & Techy (dark background, glowing accents)
-- Light & Professional (white/cream background, clean typography)
-- Bold & Vibrant (gradient, high contrast, punchy)
-- Minimal & Clean (ultra-flat, monochrome, lots of whitespace)
-
-**Q2 — Color Accent (pick one):**
-- Blue & Cyan
-- Orange & Amber
-- Green & Teal
-- Purple & Violet
-- Monochrome (black/white/grey only)
-
-**Q3 — Card Front Layout:**
-- Centered logo + company name (classic, strong brand)
-- Logo top-left + tagline below (editorial)
-- Full-bleed abstract pattern background + name overlay
-
-Save these style preferences for use in the style gallery (Step 5).
+1. **Collect Preferences:** Ask the user about their card aesthetic preferences using interactive choice menus or questions:
+   - **Card Vibe:** (e.g. Organic & Biophilic, Minimal & Clean, Bold & High-Contrast, Dark & Techy, Luxury Traditional)
+   - **Color Palette:** (e.g. Sage Greens, Warm Clay/Terracotta, Deep Indigo/Charcoal, Classic Gold, monochrome)
+   - **Layout Accents:** (e.g. Centered classic, vertical sidebars, offset asymmetry, grid/monogram watermarks)
+2. **AI Dynamic Design:** Based on the user's answers and their business profile (logo, tagline, contacts), the AI uses its design intelligence (leveraging **`/ui-ux-pro-max`** design tokens and layout principles) to dynamically draft **10 completely unique, brand-aligned business card styles** (defined as JSON objects with unique properties: `card_bg`, typography, custom `front_html`, custom `back_html`, and scoped `custom_css`).
+3. **Persist Styles:** Write the 10 custom styles to `state.json` under `"card_styles"`. This completely replaces the default hardcoded styles with tailored, premium layouts before generating the gallery.
 
 ---
 

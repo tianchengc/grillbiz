@@ -4,6 +4,33 @@ Welcome to **GrillBiz**, a premium bundle of open-source business helper skills 
 
 ---
 
+## ⚡ Quick Start & Installation
+
+GrillBiz can be installed locally or registered as a standard **Model Context Protocol (MCP)** server for immediate use in **Claude Desktop**, **Cursor**, or other compatible AI assistants.
+
+### Prerequisites
+* **Python 3.10 or higher** (Required for the Model Context Protocol SDK to establish tool communication schemas).
+
+### One-Command Clone & Install (Mac / Linux)
+To clone the repository and run the automated installer, copy and paste this command into your terminal:
+```bash
+git clone https://github.com/tianchengc/grillbiz.git && cd grillbiz && ./install.sh
+```
+
+This installer script will:
+1. Verify Python version requirements.
+2. Install Python dependencies (`mcp`, `playwright`, `pillow`).
+3. Setup the headless browser Chromium for batch card exports.
+4. Auto-register the GrillBiz MCP server inside your local **Claude Desktop** config file.
+
+### Manual MCP Setup
+If you are using Cursor, add a new MCP server in your settings:
+* **Name:** `grillbiz`
+* **Type:** `command`
+* **Command:** `python3 -m mcp_server.py` (pointing to the absolute path of `mcp_server.py` in your clone).
+
+---
+
 ## Skills Included
 
 ### 1. 📊 Business Analysis Skill: Grill-Biz (Command: `/grill-biz`)
@@ -46,31 +73,4 @@ Welcome to **GrillBiz**, a premium bundle of open-source business helper skills 
 
 ---
 
-## ⚡ Quick Start & Installation
-
-GrillBiz can be installed locally or registered as a standard **Model Context Protocol (MCP)** server for immediate use in **Claude Desktop**, **Cursor**, or other compatible AI assistants.
-
-### Prerequisites
-* **Python 3.10 or higher** (Required for the Model Context Protocol SDK).
-
-### One-Command Installation (Mac / Linux)
-Run the automated installer script from the root of the repository:
-```bash
-./install.sh
-```
-This script will:
-1. Verify Python version requirements.
-2. Install Python dependencies (`mcp`, `playwright`, `pillow`).
-3. Setup the headless browser Chromium for batch card exports.
-4. Auto-register the GrillBiz MCP server inside your local **Claude Desktop** config file.
-
-### Manual MCP Setup
-If you are using Cursor, add a new MCP server in your settings:
-* **Name:** `grillbiz`
-* **Type:** `command`
-* **Command:** `python3 -m mcp_server.py` (pointing to the absolute path of `mcp_server.py` in your clone).
-
----
-
 Impact-Site-Verification: 8d7edcdd-685d-43b8-ac05-4708d5a6fc11
-

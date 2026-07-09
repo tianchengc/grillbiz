@@ -176,15 +176,6 @@ def check_cloudflare_api(domain, account_id, api_token):
         return False, f"Cloudflare API Connection Error: {str(e)}", None
 
 
-def get_affiliate_link(domain, affiliate_id):
-    """
-    Generate an affiliate link for Namecheap.
-    """
-    encoded_domain = urllib.parse.quote(domain)
-    aff_param = f"&aff={affiliate_id}" if affiliate_id else ""
-    return f"https://www.namecheap.com/domains/registration/results/?domain={encoded_domain}{aff_param}"
-
-
 def get_cloudflare_link(domain):
     """
     Generate the Cloudflare domain registration lookup link.
@@ -213,14 +204,12 @@ def main():
     parser.add_argument("--tlds", help="Comma-separated list of domain extensions (tails) to check (e.g., com,co,net,ca)")
     parser.add_argument("--cf-token", help="Cloudflare API Token")
     parser.add_argument("--cf-account", help="Cloudflare Account ID")
-    parser.add_argument("--aff-id", help="Namecheap Affiliate ID")
     
     args = parser.parse_args()
 
     # Load from environment variables if not provided as arguments
     cf_token = args.cf_token or os.environ.get("CLOUDFLARE_API_TOKEN")
     cf_account = args.cf_account or os.environ.get("CLOUDFLARE_ACCOUNT_ID")
-    affiliate_id = args.aff_id or os.environ.get("NAMECHEAP_AFFILIATE_ID")
 
     # Determine TLD extensions to check
     if args.tlds:
@@ -251,7 +240,6 @@ def main():
             "active": False,
             "price": "See Registrar (Requires API authentication for live quote)",
             "check_method": "None",
-            "namecheap_link": get_affiliate_link(domain, affiliate_id),
             "cloudflare_link": get_cloudflare_link(domain)
         }
 

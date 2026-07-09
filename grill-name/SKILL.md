@@ -76,4 +76,4 @@ Do NOT make the user run single-name rounds indefinitely. Instead, use rounds to
    - If skipped, list the candidate names with registrar search links.
    - Provide the Brand Story/Meaning.
    - Detail the **Length-vs-Cost Trade-off** and **Pronunciation/Trademark warnings**.
-   - Provide Namecheap affiliate and Cloudflare at-cost registration links.
+   - Provide Cloudflare registration links.

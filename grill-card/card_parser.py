@@ -44,6 +44,448 @@ spec = importlib.util.spec_from_file_location(
 profile_manager = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(profile_manager)
 
+def _find_uipro_data_path():
+    paths = [
+        os.path.join(WORKSPACE_DIR, ".agents", "skills", "ui-ux-pro-max", "data"),
+        "/Users/tiancheng/.gemini/config/skills/ui-ux-pro-max-skill/src/ui-ux-pro-max/data",
+        "/Users/tiancheng/.gemini/config/skills/ui-ux-pro-max-skill/data"
+    ]
+    for p in paths:
+        if os.path.exists(p):
+            return p
+    return None
+
+
+def get_uipro_card_styles(profile_name: str, state: dict) -> list:
+    """
+    Dynamically retrieve design tokens from ui-ux-pro-max database
+    and compose 10 highly creative, customized card styles.
+    """
+    import re
+    data_dir = _find_uipro_data_path()
+    if not data_dir:
+        print("  [uipro] Warning: ui-ux-pro-max database not found. Falling back to default styles.")
+        return DEFAULT_CARD_STYLES
+
+    # Get keywords from brand description / tagline / company name
+    brand_keywords = [profile_name.lower()]
+    company_name = state.get("company", "").lower()
+    tagline = state.get("tagline", "").lower()
+    if tagline:
+        brand_keywords.extend([w.strip(",.?!") for w in tagline.split() if len(w) > 3])
+    if company_name:
+        brand_keywords.extend([w.strip(",.?!") for w in company_name.split() if len(w) > 3])
+    
+    # Add design keywords
+    search_terms = brand_keywords + ["wellness", "organic", "minimal", "luxury", "creative", "artisan"]
+
+    import csv
+    
+    # 1. Load styles from styles.csv
+    matching_styles = []
+    try:
+        with open(os.path.join(data_dir, "styles.csv"), mode="r", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                kw = row.get("Keywords", "").lower() + " " + row.get("Best For", "").lower() + " " + row.get("Style Category", "").lower()
+                score = sum(1 for term in search_terms if term in kw)
+                if score > 0 or not matching_styles:
+                    matching_styles.append((score, row))
+    except Exception as e:
+        print(f"  [uipro] Error reading styles.csv: {e}")
+        
+    matching_styles.sort(key=lambda x: x[0], reverse=True)
+    selected_styles = [x[1] for x in matching_styles[:5]]
+    if len(selected_styles) < 3:
+        try:
+            with open(os.path.join(data_dir, "styles.csv"), mode="r", encoding="utf-8") as f:
+                reader = csv.DictReader(f)
+                for i, row in enumerate(reader):
+                    if i < 5 and row not in selected_styles:
+                        selected_styles.append(row)
+        except Exception:
+            pass
+
+    # 2. Load colors from colors.csv
+    matching_colors = []
+    try:
+        with open(os.path.join(data_dir, "colors.csv"), mode="r", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                desc = row.get("Keywords", "").lower() + " " + row.get("Best For", "").lower() + " " + row.get("Palette Name", "").lower()
+                score = sum(1 for term in search_terms if term in desc)
+                if score > 0:
+                    matching_colors.append((score, row))
+    except Exception as e:
+        print(f"  [uipro] Error reading colors.csv: {e}")
+        
+    matching_colors.sort(key=lambda x: x[0], reverse=True)
+    selected_colors = [x[1] for x in matching_colors[:5]]
+    if not selected_colors:
+        try:
+            with open(os.path.join(data_dir, "colors.csv"), mode="r", encoding="utf-8") as f:
+                reader = csv.DictReader(f)
+                for i, row in enumerate(reader):
+                    if i < 5:
+                        selected_colors.append(row)
+        except Exception:
+            pass
+
+    # 3. Load typography pairings from typography.csv
+    matching_typo = []
+    try:
+        with open(os.path.join(data_dir, "typography.csv"), mode="r", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                desc = row.get("Mood/Style Keywords", "").lower() + " " + row.get("Best For", "").lower() + " " + row.get("Font Pairing Name", "").lower()
+                score = sum(1 for term in search_terms if term in desc)
+                if score > 0:
+                    matching_typo.append((score, row))
+    except Exception as e:
+        print(f"  [uipro] Error reading typography.csv: {e}")
+        
+    matching_typo.sort(key=lambda x: x[0], reverse=True)
+    selected_typo = [x[1] for x in matching_typo[:5]]
+    if not selected_typo:
+        try:
+            with open(os.path.join(data_dir, "typography.csv"), mode="r", encoding="utf-8") as f:
+                reader = csv.DictReader(f)
+                for i, row in enumerate(reader):
+                    if i < 5:
+                        selected_typo.append(row)
+        except Exception:
+            pass
+
+    generated_styles = []
+    layouts = [
+        {
+            "id_suffix": "zen_watermark",
+            "name_prefix": "Zen Watermark",
+            "layout": "classic",
+            "front_html_func": lambda company, tagline_html, logo_url, logo_fb, uid, colors, font_hdr: f'''
+            <div class="card-front zen-watermark-front">
+                <div class="watermark-char">{{{{COMPANY_INITIAL}}}}</div>
+                <div class="logo-box">
+                    <img src="{logo_url}" onerror="this.style.display='none';document.getElementById('{logo_fb}').style.display='block';">
+                    <div class="fallback-txt" id="{logo_fb}" style="display:none;">{company}</div>
+                </div>
+                <div class="brand-text">
+                    <h1 class="comp-title">{company}</h1>
+                    {tagline_html}
+                </div>
+            </div>''',
+            "back_html_func": lambda name, role, company, info_rows, colors, font_hdr: f'''
+            <div class="card-back zen-watermark-back">
+                <div class="back-details">
+                    <div class="back-name">{name}</div>
+                    <div class="back-role">{role}</div>
+                    <div class="back-company-tag">{company}</div>
+                </div>
+                <div class="vertical-accent-line" style="background: {colors[2]};"></div>
+                <div class="back-info">{info_rows}</div>
+            </div>''',
+            "css_func": lambda colors, font_hdr, font_body: f'''
+            {{{{P}}}} .card-front.zen-watermark-front {{
+                display: flex; flex-direction: row; align-items: center; justify-content: center;
+                height: 100%; width: 100%; position: relative; padding: 60px; box-sizing: border-box; gap: 40px;
+            }}
+            {{{{P}}}} .watermark-char {{
+                position: absolute; left: 40px; bottom: -20px; font-size: 15rem; font-weight: 700;
+                color: rgba(0,0,0,0.015); font-family: {font_hdr}; pointer-events: none;
+            }}
+            {{{{P}}}} .logo-box {{ width: 140px; height: 140px; display: flex; align-items: center; justify-content: center; z-index: 2; }}
+            {{{{P}}}} .logo-box img {{ max-height: 120px; max-width: 140px; object-fit: contain; }}
+            {{{{P}}}} .brand-text {{ text-align: left; display: flex; flex-direction: column; justify-content: center; z-index: 2; }}
+            {{{{P}}}} .comp-title {{ font-size: 3rem; font-weight: 700; margin: 0; color: {colors[0]}; }}
+            {{{{P}}}} .card-front.zen-watermark-front .card-tagline {{ font-size: 1.25rem; opacity: 0.6; margin-top: 6px; }}
+            
+            {{{{P}}}} .card-back.zen-watermark-back {{
+                display: flex; flex-direction: row; align-items: center; justify-content: space-between;
+                height: 100%; width: 100%; padding: 60px 80px; box-sizing: border-box;
+            }}
+            {{{{P}}}} .back-details {{ display: flex; flex-direction: column; align-items: flex-start; text-align: left; }}
+            {{{{P}}}} .back-name {{ font-size: 2.6rem; font-weight: 700; color: {colors[0]}; }}
+            {{{{P}}}} .back-role {{ font-size: 1.2rem; opacity: 0.6; margin-top: 4px; }}
+            {{{{P}}}} .back-company-tag {{ font-size: 1.1rem; font-weight: 600; text-transform: uppercase; color: {colors[2]}; margin-top: 15px; letter-spacing: 1px; }}
+            {{{{P}}}} .vertical-accent-line {{ width: 1px; height: 100%; background: {colors[2]}40; margin: 0 40px; }}
+            {{{{P}}}} .back-info {{ display: flex; flex-direction: column; gap: 12px; flex: 1; }}
+            '''
+        },
+        {
+            "id_suffix": "leaf_ring",
+            "name_prefix": "Organic Leaf Ring",
+            "layout": "classic",
+            "front_html_func": lambda company, tagline_html, logo_url, logo_fb, uid, colors, font_hdr: f'''
+            <div class="card-front organic-leaf-front">
+                <div class="organic-leaf-bg" style="background: radial-gradient(circle, {colors[2]}0f 0%, transparent 70%);"></div>
+                <div class="logo-ring" style="border: 1px solid {colors[2]}1f; box-shadow: 0 10px 25px {colors[2]}0f;">
+                    <img src="{logo_url}" onerror="this.style.display='none';document.getElementById('{logo_fb}').style.display='block';">
+                    <div class="fallback-txt" id="{logo_fb}" style="display:none;">{company}</div>
+                </div>
+                <h1 class="brand-title">{company}</h1>
+                {tagline_html}
+            </div>''',
+            "back_html_func": lambda name, role, company, info_rows, colors, font_hdr: f'''
+            <div class="card-back organic-leaf-back">
+                <div class="back-details">
+                    <div class="back-name">{name}</div>
+                    <div class="back-role">{role}</div>
+                    <div class="back-divider" style="background: {colors[2]};"></div>
+                    <div class="back-company-tag">{company}</div>
+                </div>
+                <div class="back-contact-info">{info_rows}</div>
+            </div>''',
+            "css_func": lambda colors, font_hdr, font_body: f'''
+            {{{{P}}}} .card-front.organic-leaf-front {{
+                display: flex; flex-direction: column; align-items: center; justify-content: center;
+                height: 100%; width: 100%; position: relative; padding: 40px; box-sizing: border-box;
+            }}
+            {{{{P}}}} .organic-leaf-bg {{
+                position: absolute; top: -50px; right: -50px; width: 220px; height: 220px;
+                border-radius: 50%; pointer-events: none;
+            }}
+            {{{{P}}}} .logo-ring {{
+                width: 130px; height: 130px; border-radius: 50%; background: #ffffff;
+                display: flex; align-items: center; justify-content: center;
+                padding: 20px; margin-bottom: 20px; z-index: 2;
+            }}
+            {{{{P}}}} .logo-ring img {{ max-height: 85px; max-width: 85px; object-fit: contain; }}
+            {{{{P}}}} .brand-title {{ font-size: 2.8rem; font-weight: 700; margin: 0; color: {colors[0]}; letter-spacing: -0.5px; z-index: 2; }}
+            {{{{P}}}} .card-front.organic-leaf-front .card-tagline {{ font-size: 1.1rem; opacity: 0.7; margin-top: 6px; z-index: 2; }}
+            
+            {{{{P}}}} .card-back.organic-leaf-back {{
+                display: flex; flex-direction: row; align-items: center; justify-content: space-between;
+                height: 100%; width: 100%; padding: 60px; box-sizing: border-box; gap: 40px;
+            }}
+            {{{{P}}}} .back-details {{ display: flex; flex-direction: column; align-items: flex-start; }}
+            {{{{P}}}} .back-name {{ font-size: 2.6rem; font-weight: 700; color: {colors[0]}; }}
+            {{{{P}}}} .back-role {{ font-size: 1.25rem; opacity: 0.7; margin-top: 4px; }}
+            {{{{P}}}} .back-divider {{ width: 50px; height: 2px; margin: 15px 0; }}
+            {{{{P}}}} .back-company-tag {{ font-size: 1.1rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: {colors[2]}; }}
+            {{{{P}}}} .back-contact-info {{ display: flex; flex-direction: column; gap: 12px; }}
+            '''
+        },
+        {
+            "id_suffix": "bamboo_split",
+            "name_prefix": "Bamboo Sidebar",
+            "layout": "vertical",
+            "front_html_func": lambda company, tagline_html, logo_url, logo_fb, uid, colors, font_hdr: f'''
+            <div class="card-front vertical-bamboo-front">
+                <div class="bamboo-sidebar" style="background: {colors[2]};">
+                    <div class="sidebar-text">{company}</div>
+                </div>
+                <div class="bamboo-main">
+                    <div class="logo-box">
+                        <img src="{logo_url}" onerror="this.style.display='none';document.getElementById('{logo_fb}').style.display='block';">
+                        <div class="fallback-txt" id="{logo_fb}" style="display:none;">{company}</div>
+                    </div>
+                    {tagline_html}
+                </div>
+            </div>''',
+            "back_html_func": lambda name, role, company, info_rows, colors, font_hdr: f'''
+            <div class="card-back vertical-bamboo-back">
+                <div class="bamboo-sidebar" style="background: {colors[2]};">
+                    <div class="sidebar-text">{company}</div>
+                </div>
+                <div class="bamboo-back-main">
+                    <div class="back-header">
+                        <div class="back-name">{name}</div>
+                        <div class="back-role">{role}</div>
+                    </div>
+                    <div class="back-info-box">{info_rows}</div>
+                </div>
+            </div>''',
+            "css_func": lambda colors, font_hdr, font_body: f'''
+            {{{{P}}}} .card-front.vertical-bamboo-front,
+            {{{{P}}}} .card-back.vertical-bamboo-back {{
+                display: flex; flex-direction: row; height: 100%; width: 100%; padding: 0; align-items: stretch;
+            }}
+            {{{{P}}}} .bamboo-sidebar {{
+                width: 140px; display: flex; align-items: center; justify-content: center;
+            }}
+            {{{{P}}}} .sidebar-text {{
+                writing-mode: vertical-rl; transform: rotate(180deg); font-family: {font_hdr};
+                font-size: 2.2rem; font-weight: 700; color: #ffffff; letter-spacing: 3px; text-transform: uppercase;
+            }}
+            {{{{P}}}} .bamboo-main {{
+                flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px;
+            }}
+            {{{{P}}}} .logo-box {{
+                width: 160px; height: 160px; border-radius: 50%; background: #ffffff;
+                box-shadow: 0 6px 20px rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; padding: 25px;
+                margin-bottom: 20px; border: 1px solid rgba(0,0,0,0.04);
+            }}
+            {{{{P}}}} .logo-box img {{ max-height: 110px; max-width: 110px; object-fit: contain; }}
+            {{{{P}}}} .card-front.vertical-bamboo-front .card-tagline {{ font-size: 1.3rem; font-style: italic; opacity: 0.7; }}
+            
+            {{{{P}}}} .bamboo-back-main {{
+                flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 60px 80px; text-align: left;
+            }}
+            {{{{P}}}} .back-header {{ margin-bottom: 30px; }}
+            {{{{P}}}} .back-header .back-name {{ font-size: 2.8rem; font-weight: 700; color: {colors[0]}; margin: 0; }}
+            {{{{P}}}} .back-header .back-role {{ font-size: 1.25rem; opacity: 0.6; margin-top: 4px; }}
+            {{{{P}}}} .back-info-box {{ display: flex; flex-direction: column; gap: 10px; }}
+            '''
+        },
+        {
+            "id_suffix": "luxury_gold",
+            "name_prefix": "Imperial Gold Frame",
+            "layout": "classic",
+            "front_html_func": lambda company, tagline_html, logo_url, logo_fb, uid, colors, font_hdr: f'''
+            <div class="card-front luxury-gold-front">
+                <div class="gold-inset-border" style="border: 2px solid {colors[2]};">
+                    <div class="logo-box">
+                        <img src="{logo_url}" onerror="this.style.display='none';document.getElementById('{logo_fb}').style.display='block';">
+                        <div class="fallback-txt" id="{logo_fb}" style="display:none;">{company}</div>
+                    </div>
+                    <h1 class="comp-name">{company}</h1>
+                    <div class="horizontal-gold-line" style="background: {colors[2]};"></div>
+                    {tagline_html}
+                </div>
+            </div>''',
+            "back_html_func": lambda name, role, company, info_rows, colors, font_hdr: f'''
+            <div class="card-back luxury-gold-back">
+                <div class="gold-inset-border" style="border: 2px solid {colors[2]};">
+                    <div class="back-top">
+                        <div class="back-name">{name}</div>
+                        <div class="back-role">{role}</div>
+                    </div>
+                    <div class="back-bottom">
+                        <div class="back-company">{company}</div>
+                        <div class="back-info-rows">{info_rows}</div>
+                    </div>
+                </div>
+            </div>''',
+            "css_func": lambda colors, font_hdr, font_body: f'''
+            {{{{P}}}} .card-front.luxury-gold-front,
+            {{{{P}}}} .card-back.luxury-gold-back {{
+                display: flex; flex-direction: column; align-items: stretch; justify-content: stretch;
+                height: 100%; width: 100%; padding: 40px; box-sizing: border-box;
+            }}
+            {{{{P}}}} .gold-inset-border {{
+                flex: 1; display: flex; flex-direction: column;
+                align-items: center; justify-content: center; padding: 40px; box-sizing: border-box;
+            }}
+            {{{{P}}}} .logo-box {{
+                width: 160px; height: 110px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;
+            }}
+            {{{{P}}}} .logo-box img {{ max-height: 100px; max-width: 160px; object-fit: contain; filter: brightness(0.8) sepia(1) saturate(5) hue-rotate(330deg); }}
+            {{{{P}}}} .comp-name {{ font-size: 2.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin: 0; }}
+            {{{{P}}}} .horizontal-gold-line {{ width: 100px; height: 1px; margin: 15px 0; }}
+            {{{{P}}}} .card-front.luxury-gold-front .card-tagline {{ font-size: 1.15rem; font-style: italic; color: {colors[2]}; margin: 0; letter-spacing: 1px; }}
+            
+            {{{{P}}}} .card-back.luxury-gold-back .gold-inset-border {{
+                align-items: stretch; justify-content: space-between; text-align: left; padding: 40px 50px;
+            }}
+            {{{{P}}}} .back-top .back-name {{ font-size: 2.8rem; font-weight: 700; }}
+            {{{{P}}}} .back-top .back-role {{ font-size: 1.2rem; color: {colors[2]}; margin-top: 4px; font-weight: 500; }}
+            {{{{P}}}} .back-bottom {{ display: flex; flex-direction: row; justify-content: space-between; align-items: flex-end; }}
+            {{{{P}}}} .back-company {{ font-size: 1.3rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }}
+            {{{{P}}}} .back-info-rows {{ display: flex; flex-direction: column; gap: 8px; text-align: right; }}
+            '''
+        },
+        {
+            "id_suffix": "asymmetric_accent",
+            "name_prefix": "Asymmetric Accent",
+            "layout": "asymmetric",
+            "front_html_func": lambda company, tagline_html, logo_url, logo_fb, uid, colors, font_hdr: f'''
+            <div class="card-front asymmetric-line-front">
+                <div class="logo-box">
+                    <img src="{logo_url}" onerror="this.style.display='none';document.getElementById('{logo_fb}').style.display='block';">
+                    <div class="fallback-txt" id="{logo_fb}" style="display:none;">{company}</div>
+                </div>
+                <div class="brand-box">
+                    <h1 class="comp-title">{company}</h1>
+                    {tagline_html}
+                    <div class="accent-bar" style="background: {colors[2]};"></div>
+                </div>
+            </div>''',
+            "back_html_func": lambda name, role, company, info_rows, colors, font_hdr: f'''
+            <div class="card-back asymmetric-line-back">
+                <div class="back-details">
+                    <div class="back-name">{name}</div>
+                    <div class="back-role">{role}</div>
+                    <div class="accent-bar" style="background: {colors[2]};"></div>
+                </div>
+                <div class="back-info">{info_rows}</div>
+            </div>''',
+            "css_func": lambda colors, font_hdr, font_body: f'''
+            {{{{P}}}} .card-front.asymmetric-line-front {{
+                display: flex; flex-direction: row; align-items: center; justify-content: space-between;
+                height: 100%; width: 100%; padding: 60px 80px; box-sizing: border-box;
+            }}
+            {{{{P}}}} .asymmetric-line-front .logo-box {{
+                width: 170px; height: 170px; display: flex; align-items: center; justify-content: center;
+            }}
+            {{{{P}}}} .asymmetric-line-front .logo-box img {{ max-height: 140px; max-width: 170px; object-fit: contain; }}
+            {{{{P}}}} .brand-box {{ text-align: right; display: flex; flex-direction: column; align-items: flex-end; }}
+            {{{{P}}}} .comp-title {{ font-size: 3.2rem; font-weight: 700; margin: 0; color: {colors[0]}; }}
+            {{{{P}}}} .card-front.asymmetric-line-front .card-tagline {{ font-size: 1.15rem; opacity: 0.6; margin-top: 4px; }}
+            {{{{P}}}} .accent-bar {{ width: 80px; height: 3px; margin-top: 15px; }}
+            
+            {{{{P}}}} .card-back.asymmetric-line-back {{
+                display: flex; flex-direction: row-reverse; align-items: center; justify-content: space-between;
+                height: 100%; width: 100%; padding: 60px 80px; box-sizing: border-box;
+            }}
+            {{{{P}}}} .card-back.asymmetric-line-back .back-details {{ display: flex; flex-direction: column; align-items: flex-end; }}
+            {{{{P}}}} .card-back.asymmetric-line-back .back-name {{ font-size: 2.6rem; font-weight: 700; color: {colors[0]}; }}
+            {{{{P}}}} .card-back.asymmetric-line-back .back-role {{ font-size: 1.25rem; opacity: 0.6; margin-top: 4px; }}
+            {{{{P}}}} .card-back.asymmetric-line-back .back-info {{ display: flex; flex-direction: column; gap: 12px; align-items: flex-start; text-align: left; }}
+            '''
+        }
+    ]
+
+    for i in range(10):
+        style_meta = selected_styles[i % len(selected_styles)]
+        color_meta = selected_colors[i % len(selected_colors)]
+        typo_meta = selected_typo[i % len(selected_typo)]
+        layout_recipe = layouts[i % len(layouts)]
+
+        hexes = re.findall(r"#[0-9a-fA-F]{6}", color_meta.get("Primary Colors", ""))
+        while len(hexes) < 3:
+            hexes.append("#0d9488" if len(hexes) == 2 else "#fafafa")
+
+        card_bg = hexes[3] if len(hexes) > 3 else "#ffffff"
+        if "dark" in style_meta.get("Style Category", "").lower() or "indigo" in style_meta.get("Keywords", "").lower():
+            card_bg = "#111827"
+            text_primary = "#ffffff"
+            text_secondary = "#9ca3af"
+        else:
+            card_bg = "#ffffff" if i % 2 == 0 else "#faf9f6"
+            text_primary = hexes[0]
+            text_secondary = hexes[1]
+
+        font_headers = f"'{typo_meta.get('Heading Font', 'Lora')}', serif"
+        font_body = f"'{typo_meta.get('Body Font', 'Raleway')}', sans-serif"
+
+        style_id = f"dynamic_style_{i+1}_{layout_recipe['id_suffix']}"
+        style_name = f"{layout_recipe['name_prefix']} ({style_meta.get('Style Category', 'Creative')})"
+
+        custom_css = layout_recipe["css_func"](hexes, font_headers, font_body)
+
+        generated_styles.append({
+            "id": style_id,
+            "name": style_name,
+            "layout": layout_recipe["layout"],
+            "card_bg": card_bg,
+            "card_border": f"1px solid {hexes[2]}2a",
+            "card_shadow": "0 8px 24px rgba(0,0,0,0.01)" if i % 2 == 0 else "none",
+            "font_headers": font_headers,
+            "font_body": font_body,
+            "font_import": typo_meta.get("CSS Import", ""),
+            "text_primary": text_primary,
+            "text_secondary": text_secondary,
+            "text_accent": hexes[2],
+            "text_label": f"{text_primary}60",
+            "divider_color": f"{hexes[2]}1a",
+            "front_html": layout_recipe["front_html_func"]("{{COMPANY}}", "{{TAGLINE}}", "{{LOGO_URL}}", "{{LOGO_FALLBACK_ID}}", "{{UID}}", hexes, font_headers),
+            "back_html": layout_recipe["back_html_func"]("{{NAME}}", "{{ROLE}}", "{{COMPANY}}", "{{INFO_ROWS}}", hexes, font_headers),
+            "custom_css": custom_css
+        })
+        
+    return generated_styles
+
+
 
 # Fallback styles used when state.json has no card_styles defined
 DEFAULT_CARD_STYLES = [
@@ -968,6 +1410,8 @@ def _build_card_front_html(member: dict, company: str, logo_url: str, tagline: s
     # If the style has a custom HTML template, evaluate it
     if style and "front_html" in style:
         html = style["front_html"]
+        company_initial = company[0] if company else "C"
+        html = html.replace("{{COMPANY_INITIAL}}", company_initial)
         html = html.replace("{{LOGO_URL}}", logo_url)
         html = html.replace("{{COMPANY}}", company)
         html = html.replace("{{TAGLINE}}", tagline_html)
@@ -1138,7 +1582,11 @@ def generate_gallery(profile_name: str):
     }
 
     # Use AI-generated styles if present, else fall back to defaults
-    card_styles = state.get("card_styles") or DEFAULT_CARD_STYLES
+    card_styles = state.get("card_styles")
+    if not card_styles:
+        card_styles = get_uipro_card_styles(profile_name, state)
+        state["card_styles"] = card_styles
+        save_state(profile_name, state)
 
     # Generate per-style scoped CSS
     all_style_css = ""
@@ -1227,7 +1675,11 @@ def generate_cards(profile_name: str):
     contact = state.get("contact", {})
     team = state.get("team", [])
     liked_style_ids = state.get("liked_card_styles", [])
-    all_card_styles = state.get("card_styles") or DEFAULT_CARD_STYLES
+    all_card_styles = state.get("card_styles")
+    if not all_card_styles:
+        all_card_styles = get_uipro_card_styles(profile_name, state)
+        state["card_styles"] = all_card_styles
+        save_state(profile_name, state)
 
     if not liked_style_ids:
         liked_styles = all_card_styles

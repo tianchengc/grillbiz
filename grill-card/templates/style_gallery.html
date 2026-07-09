@@ -292,27 +292,40 @@
             <div class="instruction-icon">👆</div>
             <div class="instruction-text">
                 <strong>Style Distillation — Select All Styles You Like</strong>
-                <p>Each card shows a front (brand) and back (contact info) preview. Select the styles that resonate with your brand. When satisfied, click <strong>Proceed</strong> to generate the full team card matrix, or copy the refinement prompt to request new style variations.</p>
+                <p>Each card shows a front (brand) and back (contact info) preview. ❤️ Select styles you like to build your favourites collection. When done, use <strong>Copy Prompt</strong> to iterate with new designs, or <strong>Proceed</strong> to generate the final team card matrix.</p>
             </div>
         </div>
 
-        <div class="section-heading">Style Options — Round {{ROUND}}</div>
+        <!-- LIKED STYLES SECTION: pinned favourites from all previous rounds -->
+        <div id="liked-section" style="display:{{LIKED_SECTION_DISPLAY}}">
+            <div class="section-heading" style="display:flex;align-items:center;gap:10px;">
+                ❤️ Your Favourites
+                <span style="font-size:0.8rem;font-weight:400;opacity:0.6;">(collected across rounds — always saved)</span>
+            </div>
+            <div class="style-grid" id="liked-style-grid">
+                {{LIKED_STYLES_HTML}}
+            </div>
+            <div style="height:1px;background:var(--border);margin:40px 0 30px;"></div>
+        </div>
+
+        <!-- NEW ROUND SECTION -->
+        <div class="section-heading">Round {{ROUND}} — New Designs</div>
 
         <div class="style-grid" id="style-grid">
             {{STYLES_HTML}}
         </div>
         <footer style="text-align: center; margin-top: 60px; padding-top: 30px; border-top: 1px solid var(--border); font-size: 0.85rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 6px; align-items: center;">
-            <div>Designed & generated via <strong>GrillBiz Card Gallery</strong></div>
-            <div style="font-size: 0.78rem; opacity: 0.8;">Design System powered by <a href="https://uupm.cc" target="_blank" rel="noopener noreferrer" style="color: var(--accent-blue); text-decoration: none; font-weight: 600;">UI/UX Pro Max</a></div>
+            <div>Designed &amp; generated via <strong>GrillBiz Card Gallery</strong></div>
         </footer>
     </main>
 
     <div class="feedback-panel" role="complementary" aria-label="Style selection">
-        <div class="feedback-selected">Liked: <strong id="selected-display">None</strong></div>
+        <div class="feedback-selected">Selected this round: <strong id="selected-display">None</strong></div>
+        <div style="font-size:0.78rem;opacity:0.65;margin-bottom:4px;">Copy Prompt → paste to chat → get 10 new designs inspired by your picks. Proceed → compile final cards with all your favourites.</div>
         <textarea class="feedback-input" id="feedback-prompt" readonly
             placeholder="Select styles above to generate a feedback prompt…">[GRILL-CARD FEEDBACK] No style selected.</textarea>
-        <button class="action-btn copy-btn" onclick="copyFeedback()"><span>📋</span> Copy Prompt</button>
-        <button class="action-btn proceed-btn" onclick="copyProceed()"><span>✅</span> Proceed → Generate Cards</button>
+        <button class="action-btn copy-btn" onclick="copyFeedback()"><span>📋</span> Copy Prompt → Iterate</button>
+        <button class="action-btn proceed-btn" onclick="copyProceed()"><span>✅</span> Proceed → Final Cards</button>
     </div>
 
     <script>
@@ -351,7 +364,13 @@
                 ta.value = '[GRILL-CARD FEEDBACK] No style selected.';
                 ta.readOnly = true;
             } else {
-                ta.value = `[GRILL-CARD FEEDBACK] Liked: ${ids.join(', ')}`;
+                // Include style names for readability alongside IDs
+                const names = ids.map(id => {
+                    const card = document.getElementById(`style-card-${id}`);
+                    const nameEl = card ? card.querySelector('.style-name') : null;
+                    return nameEl ? `${id}(${nameEl.textContent.trim()})` : id;
+                });
+                ta.value = `[GRILL-CARD FEEDBACK] Round={{ROUND}} Liked: ${ids.join(',')} Names: ${names.join(' | ')}`;
                 ta.readOnly = false;
             }
         }
@@ -365,7 +384,7 @@
         function copyProceed() {
             const ids = Array.from(selectedStyles);
             if (!ids.length) { alert('Please select at least one style first.'); return; }
-            const prompt = `[GRILL-CARD PROCEED] Generate full team card matrix with styles: ${ids.join(', ')}`;
+            const prompt = `[GRILL-CARD PROCEED] Final styles selected: ${ids.join(',')} — compile team cards matrix`;
             navigator.clipboard.writeText(prompt).then(() => flashBtn('.proceed-btn', '📋 Paste to Chat!'));
         }
 

@@ -1,168 +1,263 @@
 ---
 name: grill-card
-description: Business Card Generator (Grill-Card) creating front/back print-ready business cards (3.5" x 2") for entire teams. Supports fully custom fields, style distillation gallery loop, and a final matrix output of all members × all liked styles.
+description: Business Card Generator (Grill-Card) creating front/back print-ready business cards (3.5" x 2") for entire teams. Collects or reuses a business profile, automatically detects and fixes logo backgrounds, then generates 10 unique hero-section-inspired designs and compiles them into a gallery and team matrix.
 ---
 
 # Grill-Card (`/grill-card`)
 
-You are a creative brand designer and layout specialist. Guide the user through a 5-step interactive workflow to design, style-distill, and generate professional business cards for their entire team.
+You are a creative brand designer and layout specialist. You design business cards the way a top-tier agency designs ecommerce hero sections — dramatic, full-bleed, editorial, and visually striking — then render them at card dimensions (1050×600px).
 
 ---
 
 ## Workflow Overview
 
 ```
-Step 1 → Logo
-Step 2 → Business Info
-Step 3 → Style Preferences
-Step 4 → Team Members & Contacts
-Step 5 → Style Gallery Loop → Final Card Matrix
+Step 1 → Profile Setup (collect or reuse business profile)
+Step 2 → Logo Setup & Background Auto-Fix
+Step 3 → Brand Aesthetic Inference
+Step 4 → Hero-Section-Inspired Card Design (generate 10 unique styles)
+Step 5 → Compile & Deliver
+Step 6 → Review & Live Refinements
 ```
 
 ---
 
-## Step 1: Logo
+## Step 1: Profile Setup
 
-1. Check `grillbiz-profiles/logos/` for existing generated logos.
-   - If logos found: display the available logo filenames and ask user which they want to use (by ID or path).
-   - If no logos found: recommend running `/grill-logo` first, but offer to proceed with:
-     - A URL to an online image
-     - A local file path
-     - **Text-only fallback** (company name rendered as styled text on the card front)
+### 1a — Check for existing profile
+Look for an existing profile directory:
+```
+grillbiz-profiles/{profile_name}/state.json
+```
 
-2. **Automatic background removal:** `card_parser.py` automatically inspects the logo file before rendering.
-   - If the logo has a **solid or white background** (no transparent pixels), it runs `grill-background/remove_bg.py` automatically and uses the resulting `_nobg.png` for all card designs.
-   - If the logo **already has transparency**, it is used as-is.
-   - If the file is a remote URL or cannot be inspected, the CSS `mix-blend-mode` fallback is used instead.
-   - You do **not** need to run `/grill-background` manually — it happens transparently during gallery/card compilation. The `_nobg.png` is cached, so it only runs once per logo.
+- If **found**: Load the profile. Tell the user:
+  > "Found your existing **{company}** profile. I'll use your saved brand info and team contacts. Would you like to update anything before generating cards?"
+  - If the user wants changes, collect the updates and save them to `state.json`.
+  - If not, proceed directly to Step 2.
 
----
+- If **not found**: Collect information interactively (see Step 1b).
 
-## Step 2: Business Info
+### 1b — Collect from scratch (no existing profile)
 
-1. Check if `LEAN_CANVAS.md` (or `{profile_name}.md`) exists. If found, auto-extract:
-   - Company Name
-   - Website
-2. Prompt the user to confirm auto-filled values and supply or override the basics:
-   - Company Name
-   - Website
-   - General Contact Phone
-   - General Contact Email
-3. **Optional Shared Fields Selection:** Use the interactive `ask_question` tool (with `is_multi_select: true`) to ask the user which additional fields they want to include on the business cards. Provide a curated list:
-   - Slogan / Tagline
-   - Instagram Handle
-   - Twitter / X Handle
-   - LinkedIn Company Page
-   - GitHub Organization URL
-   - Office Address / Location
-   - WhatsApp Number
-   - YouTube Channel
-   - Patreon Page
-4. For each selected option, prompt the user to input the corresponding value.
-5. **Review & Confirm:** Summarize all collected info and ask: "Does everything look correct? Anything to correct or add before we continue?"
+Ask in a single grouped message — do NOT send one question at a time:
 
----
+> I need a few details to design your business cards. Please fill in what you know (you can skip fields):
+>
+> **Brand:**
+> - Company name:
+> - Tagline / brand slogan:
+> - Website:
+> - Email:
+> - Phone:
+>
+> **Team members** (add as many as needed):
+> - Name | Role | Email | Phone
+>
+> **Logo:** Please drop in your logo file path or URL, or type "none" to proceed without one.
 
-## Step 3: Style Preferences & AI Generation
-
-1. **Collect Preferences:** Ask the user about their card aesthetic preferences using interactive choice menus or questions:
-   - **Card Vibe:** (e.g. Organic & Biophilic, Minimal & Clean, Bold & High-Contrast, Dark & Techy, Luxury Traditional)
-   - **Color Palette:** (e.g. Sage Greens, Warm Clay/Terracotta, Deep Indigo/Charcoal, Classic Gold, monochrome)
-   - **Layout Accents:** (e.g. Centered classic, vertical sidebars, offset asymmetry, grid/monogram watermarks)
-2. **AI Dynamic Design:** Based on the user's answers and their business profile (logo, tagline, contacts), the AI uses its design intelligence (leveraging **`/ui-ux-pro-max`** design tokens and layout principles) to dynamically draft **10 completely unique, brand-aligned business card styles** (defined as JSON objects with unique properties: `card_bg`, typography, custom `front_html`, custom `back_html`, and scoped `custom_css`).
-3. **Persist Styles:** Write the 10 custom styles to `state.json` under `"card_styles"`. This completely replaces the default hardcoded styles with tailored, premium layouts before generating the gallery.
-
----
-
-## Step 4: Team Members & Contacts
-
-Prompt the user for team members. Each member is a flexible object with:
-- **Name** (required)
-- **Role / Title** (required)
-- **Personal Email** (optional, fallback to company email)
-- **Personal Phone** (optional, fallback to company phone)
-- **Custom Fields** (unlimited optional key-value pairs): e.g. LinkedIn URL, Twitter/X handle, Instagram, website override, office address, tagline, etc.
-
-Present a **summary table** of all members and their collected info, then ask:
-> "Does this look correct? Any corrections or additional team members to add?"
+Once collected, save to `grillbiz-profiles/{profile_name}/state.json` using the standard schema:
+```json
+{
+  "profile": "profile_name",
+  "company": "...",
+  "tagline": "...",
+  "contact": { "email": "...", "phone": "...", "website": "..." },
+  "logo_url": "logos/logo_file.png",
+  "team": [
+    { "name": "...", "role": "...", "email": "...", "phone": "...", "website": "...", "custom_fields": {} }
+  ],
+  "round": 1,
+  "liked_logo_ids": [],
+  "liked_card_styles": [],
+  "card_styles": [],
+  "socials": {}
+}
+```
 
 ---
 
-## Step 5: Style Gallery Loop → Final Card Matrix
+## Step 2: Logo Setup & Background Auto-Fix
 
-### Phase A — Style Gallery HTML
+This step runs **automatically** — no user input required unless the logo is missing.
 
-Run `python3 grill-card/card_parser.py {profile_name} gallery` to generate:
-`grillbiz-profiles/{profile_name}/cards/{profile_name}_style_gallery.html`
+### 2a — Check logo existence
+Read `logo_url` from `state.json`. Resolve the full path:
+```
+grillbiz-profiles/{profile_name}/{logo_url}
+```
 
-This file shows a style-picker gallery using the **first team member's data** as the preview sample. Features:
-- GrillBiz header, GitHub + LinkedIn links, dark/light mode toggle
-- Instruction banner: "Select all the styles you like. Your selections will be used to generate the final card matrix for the whole team."
-- Grid of style preview cards — each style variant shows a **front + back card pair**
-- Each style card has a **🤍 Select Style / ❤️ Selected** multi-select toggle button
-- Sticky bottom feedback panel with:
-  - Display of currently selected style IDs
-  - Editable feedback textarea (pre-filled with: `[GRILL-CARD FEEDBACK] Liked: <ids>. Style notes: ...`)
-  - **Copy Feedback Prompt** button → user pastes into chat to trigger next round
+- If the path **does not exist** or `logo_url` is empty:
+  > "No logo found. I'll generate text-only card designs. You can add a logo later and regenerate."
+  - Set `logo_url = ""` and proceed.
 
-Tell the user:
-> "Open `grillbiz-profiles/{profile_name}/cards/{profile_name}_style_gallery.html` in your browser. Select the styles you like, then copy and paste the feedback prompt here to refine or proceed."
+- If the logo **exists**, continue to 2b.
 
-### Phase B — Style Gallery Iteration
+### 2b — Logo background detection
 
-When the user pastes a `[GRILL-CARD FEEDBACK]` prompt:
-1. Parse the liked style IDs and any style notes.
-2. If they want **refinements**: generate 3 new style variants blending their preferences and regenerate the gallery HTML, appending the new styles. Keep liked styles pinned at the top.
-3. If they are **satisfied** (say "looks good" / "proceed" / "generate cards"): proceed to Phase C.
+Run the following Python check inline (no user interaction needed):
 
-Repeat up to **5 rounds** of the gallery loop.
+```python
+from PIL import Image
+import numpy as np
 
-### Phase C — Final Card Matrix HTML
+img = Image.open(logo_path).convert("RGBA")
+data = np.array(img)
+alpha = data[..., 3]
+r, g, b = data[...,0].astype(float), data[...,1].astype(float), data[...,2].astype(float)
 
-Run `python3 grill-card/card_parser.py {profile_name} cards` to generate:
-`grillbiz-profiles/{profile_name}/cards/{profile_name}_cards.html`
+# Count pixels that are near-white (all channels > 220) AND fully opaque
+near_white_opaque = ((r > 220) & (g > 220) & (b > 220) & (alpha > 200))
+white_ratio = near_white_opaque.sum() / (data.shape[0] * data.shape[1])
 
-This file shows the **full team × liked styles matrix**:
-- GrillBiz header, GitHub + LinkedIn links, dark/light mode toggle
-- Sticky top member navigation tabs (animated underline, smooth scroll)
-- Per-member section: shows one card pair (front + back) per liked style
-- Per-card: **Save Front PNG** / **Save Back PNG** buttons (html2canvas)
-- Global **Download All PNGs** button (batch with staggered timing)
+has_solid_bg = white_ratio > 0.10  # >10% near-white opaque pixels = solid background
+```
 
-Tell the user:
-> "Your final business card matrix is ready! Open `grillbiz-profiles/{profile_name}/cards/{profile_name}_cards.html` in your browser."
+**Decision logic:**
+- `white_ratio > 0.10` → **solid/light background detected** → proceed to 2c (auto-fix)
+- `white_ratio ≤ 0.10` → **already transparent or dark background** → skip to 2d
+
+### 2c — Automatic background removal
+
+Tell the user (one-line notice, not a blocking question):
+> "🔍 Detected a solid background on your logo. Auto-removing it for clean integration with dark and gradient card designs..."
+
+Run the **white-to-alpha** fix (the PIL approach that handles logos with circle borders):
+```python
+from PIL import Image
+import numpy as np
+
+img = Image.open(logo_path).convert("RGBA")
+data = np.array(img, dtype=np.float32)
+r, g, b, a = data[...,0], data[...,1], data[...,2], data[...,3]
+
+# Soft white-to-alpha: pixels above brightness 200 gradually become transparent
+whiteness = np.minimum(r, np.minimum(g, b))
+fade = np.clip((whiteness - 200) / 55.0, 0, 1)
+is_white = (r > 220) & (g > 220) & (b > 220)
+data[...,3] = np.clip(a * (1.0 - fade * is_white.astype(np.float32)), 0, 255)
+
+result = Image.fromarray(data.astype(np.uint8), "RGBA")
+
+base, _ = os.path.splitext(logo_path)
+clean_path = base + "_clean.png"
+result.save(clean_path, "PNG")
+```
+
+Then update `state.json`:
+```python
+state["logo_url"] = clean_path.replace(f"grillbiz-profiles/{profile_name}/", "")
+# save state.json
+```
+
+> "✅ Logo background removed. Saved as `{clean_path_basename}`."
+
+### 2d — Set CSS filter per design background
+
+Now that we have a transparent logo (or a dark/naturally transparent one), the agent must choose a CSS `filter` value per card design based on the card's background color. The transparent logo has:
+- **Dark slate-colored linework/border** — visible on light backgrounds
+- **Colored accents** (e.g. sage green leaf) — visible on any neutral background
+- **Transparent fill** — blends with any background
+
+Apply these filter rules when writing each design's logo `<img>` tag:
+
+| Card background | Logo filter to use |
+|---|---|
+| Very dark (black, near-black, dark navy) | `filter: brightness(0) invert(1) opacity(0.9)` → white logo |
+| Dark with color (dark green, indigo, forest) | `filter: brightness(0) invert(1) opacity(0.85)` → white, slightly softer |
+| Gold/warm frame on dark | `filter: sepia(1) saturate(2.5) hue-rotate(330deg) brightness(1.2)` → gold tint |
+| Light/cream/white | `filter: none` → natural colors |
+| Warm cream/parchment | `filter: sepia(0.3) brightness(0.7)` → warm-toned dark |
+| Bold accent (yellow, red) | `filter: brightness(0)` → solid black |
 
 ---
 
-## Parser CLI Reference
+## Step 3: Brand Aesthetic Inference
+
+Automatically infer from company name, tagline, and industry — do NOT ask the user. Determine:
+- **Mood board:** e.g. "zen luxury", "earthy artisan", "stark modernist", "neon night market", "cinematic editorial"
+- **Color palette:** primary bg, text, accent, and secondary colors that match the brand mood
+- **Typography personality:** editorial serif, geometric sans, monospace, calligraphic
+
+This inference should directly inform which design directions you choose in Step 4.
+
+---
+
+## Step 4: Hero-Section-Inspired Card Design
+
+**Core Mental Model:** You are NOT designing a business card. You are designing **two companion ecommerce hero sections** that happen to live on a 1050×600px canvas. Think: Apple product page, Aesop brand site, Stripe landing page. Then output that as a card.
+
+- **Panel 1 (Front):** The brand hero. Full-bleed background, large editorial typography, logo as a commanding visual element — not tucked in a corner. Think "above the fold."
+- **Panel 2 (Back):** The feature/contact strip. Clean information hierarchy — still visually rich, not a plain text dump.
+
+### Design Rules:
+- **No templates.** Each of the 10 designs must have a completely unique DOM structure, CSS layout paradigm, color story, and font pairing.
+- **Think in hero sections:** Use full-bleed gradients, mesh gradients, SVG patterns, oversized type, layered depth, bold color blocking, floating glass panels.
+- **High contrast always.** Every text element must pass basic contrast — no light on light, no dark on dark.
+- **Pixel-explicit sizing.** Write all CSS in `px` (not `rem`) since the canvas is a fixed 1050×600px viewport.
+- **Fonts via `@import`.** Load Google Fonts at the top of each style's `font_import` field.
+- **Vary wildly.** Designs should range across moods: luxury fashion, tech startup, artisan studio, brutalist, cinematic, editorial — even for the same brand.
+- **Logo integration.** Place the logo in a prominent, considered position — not just a corner stub. Size it appropriately (60–120px) and apply the correct CSS filter for the design's background as defined in Step 2d.
+
+### Card Canvas Specs:
+- Canvas: `1050px × 600px` (= 3.5" × 2" at 300 DPI)
+- Gallery preview: scaled to 33% (`transform: scale(0.333)`)
+- Cards matrix preview: scaled to 50% (`transform: scale(0.5)`)
+- Headlines: 80–120px · Body/contact info: 18–22px · Labels: 11–14px
+
+### Data placeholders to use in HTML templates:
+
+Each design's `front_html` and `back_html` strings must use these exact replacement tokens (filled by the compile step):
+- `{{LOGO_URL}}` — resolved relative path to the logo file
+- `{{COMPANY}}` — company name string
+- `{{TAGLINE}}` — wrapped as `<div class="card-tagline">{tagline}</div>`
+- `{{NAME}}` — team member name
+- `{{ROLE}}` — team member role/title
+- `{{INFO_ROWS}}` — pre-built HTML rows, each: `<div class="back-info-row"><span class="back-info-label">Label</span><span class="back-info-val">Value</span></div>`
+
+CSS scope prefix `{{P}}` is replaced with `.s-{style_id}` to isolate each design's styles.
+
+---
+
+## Step 5: Compile & Deliver
+
+After writing 10 style objects into `state["card_styles"]`, save `state.json` and run the compile script:
 
 ```bash
-# Generate style gallery (Phase A/B)
-python3 grill-card/card_parser.py {profile_name} gallery
-
-# Generate final card matrix (Phase C)
-python3 grill-card/card_parser.py {profile_name} cards
+python3 {path_to_compile_script} {profile_name}
 ```
 
-State is read from `grillbiz-profiles/{profile_name}/state.json`.
+This produces:
+- **Style Gallery:** `grillbiz-profiles/{profile}/cards/{profile}_style_gallery.html`  
+  → 10 designs side by side, front + back preview at 33% scale, with select toggles
+- **Team Cards Matrix:** `grillbiz-profiles/{profile}/cards/{profile}_cards.html`  
+  → All team members × all 10 styles at 50% scale, with individual PNG download buttons
+
+Provide both links to the user:
+> "✅ Done! Open these in your browser:
+> - 🎨 Style Gallery: `grillbiz-profiles/{profile}/cards/{profile}_style_gallery.html`
+> - 📋 Full Team Cards: `grillbiz-profiles/{profile}/cards/{profile}_cards.html`"
 
 ---
 
-## Dependencies & Requirements
+## Step 6: Review & Live Refinements
 
-Grill-Card requires **`ui-ux-pro-max-cli`** to be installed globally in the system to leverage high-end design systems.
+1. Ask the user to review the gallery and select their favourite styles.
+2. If they want refinements (color, layout, typography, logo placement):
+   - Edit the relevant design's `front_html`, `back_html`, or `custom_css` directly in the compile script.
+   - Re-run the compile script.
+   - Do NOT use template variables or placeholder logic — edit absolute values directly.
+3. If they want a completely new round of 10 designs, increment `state["round"]` and repeat from Step 4 with a new set of design directions.
+4. When the user selects final styles, update `state["liked_card_styles"]` with the chosen style IDs.
 
-### Installation Procedure:
-1. Verify Node.js is installed.
-2. Install the CLI tool globally:
-   ```bash
-   npm install -g ui-ux-pro-max-cli
-   ```
-3. Initialize the integration:
-   ```bash
-   uipro init --ai antigravity
-   ```
-4. Verify the installation by checking:
-   ```bash
-   uipro versions
-   ```
+---
+
+## Key File Paths Reference
+
+```
+grillbiz-profiles/{profile}/state.json          ← single source of truth
+grillbiz-profiles/{profile}/logos/              ← logo files (original + _clean.png)
+grillbiz-profiles/{profile}/cards/              ← compiled HTML output
+grill-card/templates/style_gallery.html         ← display shell for gallery
+grill-card/templates/card_template.html         ← display shell for cards matrix
+grill-background/remove_bg.py                   ← AI background remover (rembg)
+```

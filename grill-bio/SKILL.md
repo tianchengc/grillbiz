@@ -1,6 +1,6 @@
 ---
 name: grill-bio
-description: Dynamic Bio Link Generator (Grill-Bio) — interactive, step-by-step wizard creating mobile-first bio landing pages styling with ui-ux-pro-max-skill design intelligence.
+description: Dynamic Bio Link Generator (Grill-Bio) — interactive, step-by-step wizard creating mobile-first bio landing pages with AI-driven design intelligence.
 ---
 
 # Grill-Bio (`/grill-bio`)
@@ -30,11 +30,16 @@ You are a mobile UI/UX designer and web developer. Guide the user through a step
 2. Confirm the complete collected details before proceeding to style search.
 
 ### Step 3: Design Intelligence Search & Taste Selection
-1. Run the `ui-ux-pro-max-skill` design generator to search for styling recommendations:
-   `python3 src/ui-ux-pro-max/scripts/search.py "<company concepts>" --design-system`
-2. Present the recommended styling vibe (e.g. Neumorphic lavender/sage, Glassmorphic tech blue, Organic biophilic cream/forest) and font pairings (Outfit, Cormorant Garamond, Space Grotesk) to the user.
-3. Formulate 4-6 dynamic `BioStyle` JSON objects matching the user's taste and the generated recommendations, and save them in the profile's `state.json` under `"bio_styles"`.
 
+> **Optional enhancement:** Ask the user:
+> *"Would you like me to run the UI/UX Pro Max design search to get curated palette and font pairing recommendations based on your brand concepts? (It takes a few seconds and may improve the design quality.) Yes / No"*
+
+- **If yes:** Run the design search:
+  `python3 src/ui-ux-pro-max/scripts/search.py "<company concepts>" --design-system`
+  Then use the returned vibe, color palette, and font pairings to inform the `BioStyle` objects below.
+- **If no:** Skip the search and use your own design judgment based on the brand profile, tagline, and industry.
+
+3. Formulate 4-6 dynamic `BioStyle` JSON objects matching the user's taste (and the search results if run), and save them in the profile's `state.json` under `"bio_styles"`.
 ### Step 4: Visual Gallery Preview & Iteration Loop
 1. Run the compiler tool to generate the style gallery HTML:
    `python3 grill-bio/bio_parser.py <profile_name> gallery`

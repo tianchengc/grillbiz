@@ -20,7 +20,15 @@ Unlike traditional builders that force you into restrictive templates, GrillBiz 
 
 ## ⚡ Installation & Quick Start
 
-GrillBiz supports three installation methods depending on your setup.
+### 🤖 AI Agent Quick Install (Copy & Paste)
+If you are using an AI coding assistant (like **Antigravity**, **Claude Code**, or **Cursor**), you can simply copy and paste this prompt directly into your agent's chat, and it will handle the installation and setup for you:
+
+> Please help me install the skills and MCP server from the repository https://github.com/tianchengc/grillbiz. Analyze that repository, choose the best installation method for your agent framework (global or workspace-scoped), and proceed with the installation.
+
+---
+
+### Standard Installation Methods
+For manual installation, choose one of the following methods depending on your setup.
 
 ### 1. Claude Code Plugin (Managed Setup)
 If you use **Claude Code**, you can install GrillBiz directly as a plugin. This automatically registers the MCP server and configures the agent's capabilities:
@@ -53,6 +61,48 @@ This installer script will:
 3. Set up the headless browser Chromium for Playwright PNG exports.
 4. Auto-register the GrillBiz MCP server inside your local **Claude Desktop** config file.
 5. Flatten and copy all GrillBiz skills into your global agent customizations folders (`~/.gemini/config/skills` and `~/.claude/skills`), making them immediately active.
+
+### 4. Antigravity Installation
+To install custom skills from this repository into Antigravity, there are two correct and standard approaches depending on whether you want the skill available **globally** (across all projects) or **locally** (only for this workspace).
+
+#### Workspace-Scoped Installation (Recommended)
+This is the cleanest approach because it keeps the skills self-contained, project-specific, and doesn't require global filesystem permissions.
+
+1. Create a `.agents/skills/` directory in the root of your project workspace.
+2. Clone or copy the skill folders directly into that folder:
+   ```bash
+   # Clone the repository to a temp folder
+   git clone https://github.com/tianchengc/grillbiz temp_skills
+   
+   # Move the specific skill folders into the workspace root .agents/skills/
+   mkdir -p .agents/skills/
+   cp -rf temp_skills/skills/grill-* .agents/skills/
+   
+   # Clean up
+   rm -rf temp_skills
+   ```
+3. **Trigger:** Antigravity automatically detects and loads the skills when you open this workspace.
+
+#### Global Installation (Available to All Projects)
+If you want the skills to be active across all your coding workspaces on your machine, you must place them directly in the global Antigravity config directory.
+
+1. Navigate to the global configuration directory: `~/.gemini/config/skills/`
+2. Clone or copy the skill folders directly into that folder:
+   ```bash
+   # Create the skills sub-directory if it doesn't exist
+   mkdir -p ~/.gemini/config/skills/
+   
+   # Clone the repository locally and copy the sub-skills flatly
+   git clone https://github.com/tianchengc/grillbiz temp_skills
+   cp -rf temp_skills/skills/grill-* ~/.gemini/config/skills/
+   rm -rf temp_skills
+   ```
+3. **Trigger:** Antigravity automatically loads these skills for any workspace you open.
+
+#### Why `npx skills@latest add` installed them in the wrong place for Antigravity
+The `skills` CLI installer is designed to be compatible with multiple AI coding agents. By default, it targets the global directories of other agents (like Claude Code, which uses `~/.claude/` or Roo Code, which uses `~/.agents/` in the home directory). 
+
+Since Antigravity strictly uses `~/.gemini/config/` as its global customization root, you should use the manual copy/clone approach outlined above to target the correct path.
 
 ---
 

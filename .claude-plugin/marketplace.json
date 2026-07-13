@@ -1,0 +1,14 @@
+{
+  "name": "tianchengc",
+  "owner": {
+    "name": "Tiancheng"
+  },
+  "plugins": [
+    {
+      "name": "grillbiz",
+      "description": "GrillBiz startup bootstrapping and asset generation skills bundle.",
+      "source": "./",
+      "version": "1.2.0"
+    }
+  ]
+}

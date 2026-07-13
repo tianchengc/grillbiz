@@ -390,7 +390,7 @@
             <p style="font-size: 0.9rem; color: var(--text-muted)">
                 Select your favorite logo from the options above, type any changes or refinements you want to see, and click "Copy Feedback Prompt". Then paste it directly into your chat.
             </p>
-            <textarea class="feedback-textarea" id="feedbackPrompt" readonly>[GRILL-LOGO FEEDBACK] No logo selected. Please select a logo above to generate feedback prompt.</textarea>
+            <textarea class="feedback-textarea" id="feedbackPrompt">[GRILL-LOGO FEEDBACK] I did not like any of the logo options presented in the current round. Please generate a completely new set of logo candidates with a different creative direction and visual concept.</textarea>
             <div class="feedback-actions">
                 <div style="font-size: 0.9rem; color: var(--text-muted);">
                     Liked Logo: <span id="selectedLogoId" style="color: var(--accent-orange); font-weight: 700;">None</span>
@@ -404,6 +404,18 @@
 
     <script>
         let selectedLogos = new Set();
+
+        // Synchronize selectedLogos set on page load
+        document.addEventListener("DOMContentLoaded", () => {
+            const activeButtons = document.querySelectorAll(".like-btn.active");
+            activeButtons.forEach(btn => {
+                const logoId = btn.id.replace("like-btn-", "");
+                selectedLogos.add(logoId);
+            });
+            const selectedArray = Array.from(selectedLogos);
+            document.getElementById('selectedLogoId').textContent = selectedArray.join(', ').toUpperCase() || 'None';
+            updatePrompt();
+        });
 
         function toggleTheme() {
             const html = document.documentElement;
@@ -454,13 +466,11 @@
             const selectedArray = Array.from(selectedLogos);
             
             if (selectedArray.length === 0) {
-                textarea.value = "[GRILL-LOGO FEEDBACK] No logo selected. Please select one or more logos above to generate the feedback prompt.";
-                textarea.readOnly = true;
+                textarea.value = "[GRILL-LOGO FEEDBACK] I did not like any of the logo options presented in the current round. Please generate a completely new set of logo candidates with a different creative direction and visual concept.";
                 return;
             }
 
             textarea.value = `[GRILL-LOGO FEEDBACK] Liked: ${selectedArray.join(', ')}`;
-            textarea.readOnly = false;
         }
 
         function copyFeedback() {

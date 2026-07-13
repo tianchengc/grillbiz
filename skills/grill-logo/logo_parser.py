@@ -6,13 +6,14 @@ import importlib.util
 
 def generate_logo_html(profile_name):
     # Locate paths
-    script_dir = os.path.dirname(os.path.realpath(__file__))
-    workspace_dir = os.path.dirname(script_dir)
+    script_dir = os.path.dirname(os.path.realpath(__file__)) # .../skills/grill-logo
+    skills_dir = os.path.dirname(script_dir) # .../skills
+    workspace_dir = os.path.dirname(skills_dir) # .../
     
     # Import profile_manager dynamically to handle hyphenated folder name
     spec = importlib.util.spec_from_file_location(
         "profile_manager", 
-        os.path.join(workspace_dir, "grill-biz", "profile_manager.py")
+        os.path.join(skills_dir, "grill-biz", "profile_manager.py")
     )
     profile_manager = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(profile_manager)

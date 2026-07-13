@@ -1,0 +1,10 @@
+{
+  "name": "grillbiz",
+  "version": "1.2.0",
+  "description": "GrillBiz startup bootstrapping and asset generation skills bundle.",
+  "author": {
+    "name": "Tiancheng"
+  },
+  "repository": "https://github.com/tianchengc/grillbiz",
+  "license": "MIT"
+}

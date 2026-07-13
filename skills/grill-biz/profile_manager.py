@@ -4,7 +4,7 @@ import sys
 import json
 import shutil
 
-WORKSPACE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+WORKSPACE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 PROFILES_DIR = os.path.join(WORKSPACE_DIR, "grillbiz-profiles")
 
 def migrate_old_profile(profile_name: str):

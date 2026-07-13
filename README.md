@@ -18,24 +18,41 @@ Unlike traditional builders that force you into restrictive templates, GrillBiz 
 
 ---
 
-## ⚡ Quick Start & Installation
+## ⚡ Installation & Quick Start
 
-GrillBiz integrates seamlessly as an MCP server with **Claude Desktop**, **Cursor**, **Windsurf**, or other compatible AI assistants.
+GrillBiz supports three installation methods depending on your setup.
 
-### Prerequisites
+### 1. Claude Code Plugin (Managed Setup)
+If you use **Claude Code**, you can install GrillBiz directly as a plugin. This automatically registers the MCP server and configures the agent's capabilities:
+
+Inside Claude Code, run:
+```bash
+/plugin marketplace add tianchengc/grillbiz
+/plugin install grillbiz@tianchengc
+```
+
+### 2. Agent Skills CLI (skills.sh Standard)
+If you use standard agent harnesses or want to copy the editable skill prompt cards into your local project workspace:
+```bash
+npx skills@latest add tianchengc/grillbiz
+```
+
+### 3. Local Installer (For Claude Desktop, Cursor, and Windsurf)
+For traditional MCP clients:
+
+#### Prerequisites
 * **Python 3.10 or higher** (Required for the Model Context Protocol SDK).
 
-### One-Command Installer (macOS & Linux)
-To clone the repository and run the automated installer, copy and paste this command into your terminal:
+#### One-Command Installer (macOS & Linux)
 ```bash
 git clone https://github.com/tianchengc/grillbiz.git && cd grillbiz && ./install.sh
 ```
-
 This installer script will:
 1. Verify Python version requirements.
 2. Install Python dependencies (`mcp`, `playwright`, `pillow`).
 3. Set up the headless browser Chromium for Playwright PNG exports.
 4. Auto-register the GrillBiz MCP server inside your local **Claude Desktop** config file.
+5. Flatten and copy all GrillBiz skills into your global agent customizations folders (`~/.gemini/config/skills` and `~/.claude/skills`), making them immediately active.
 
 ---
 

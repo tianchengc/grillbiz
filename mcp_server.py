@@ -11,7 +11,7 @@ except ImportError:
     sys.exit(1)
 
 # Initialize FastMCP Server
-mcp = FastMCP("grillbiz", version="1.2.0")
+mcp = FastMCP("grillbiz")
 
 # ==========================================================
 # 🛠️ MCP TOOLS (Action Executions)
@@ -26,7 +26,7 @@ def check_domain(domain: str, tlds: str = None) -> str:
         domain: The domain name or base brand name to check (e.g. 'google' or 'google.com').
         tlds: Comma-separated list of extensions to check (e.g. 'com,co,net,ca'). If omitted, uses default list.
     """
-    script_path = os.path.join(os.path.dirname(__file__), "grill-name", "check_domain.py")
+    script_path = os.path.join(os.path.dirname(__file__), "skills", "grill-name", "check_domain.py")
     cmd = [sys.executable, script_path, domain]
     if tlds:
         cmd.extend(["--tlds", tlds])
@@ -48,7 +48,7 @@ def compile_lean_canvas(profile_path: str, output_path: str) -> str:
         profile_path: Absolute path to the source markdown profile.
         output_path: Absolute path to write the compiled HTML page to.
     """
-    script_path = os.path.join(os.path.dirname(__file__), "grill-biz", "canvas_parser.py")
+    script_path = os.path.join(os.path.dirname(__file__), "skills", "grill-biz", "canvas_parser.py")
     try:
         res = subprocess.run(
             [sys.executable, script_path, profile_path, output_path],
@@ -66,7 +66,7 @@ def compile_logo_catalog(profile_name: str) -> str:
     Args:
         profile_name: The name of the business profile.
     """
-    script_path = os.path.join(os.path.dirname(__file__), "grill-logo", "logo_parser.py")
+    script_path = os.path.join(os.path.dirname(__file__), "skills", "grill-logo", "logo_parser.py")
     try:
         res = subprocess.run(
             [sys.executable, script_path, profile_name],
@@ -86,7 +86,7 @@ def generate_business_card_page(company: str, cards_data_json: str, output_path:
         cards_data_json: JSON string of team members. Format: [{"name": "Jane", "role": "CEO", "email": "j@co.com", "phone": "+1...", "company": "Co", "website": "co.com", "logo_url": "..."}]
         output_path: Absolute path to write the compiled cards HTML file to.
     """
-    template_path = os.path.join(os.path.dirname(__file__), "grill-card", "templates", "card_template.html")
+    template_path = os.path.join(os.path.dirname(__file__), "skills", "grill-card", "templates", "card_template.html")
     if not os.path.exists(template_path):
         return f"Error: Card template not found at {template_path}"
     
@@ -119,7 +119,7 @@ def compile_card_gallery(profile_name: str) -> str:
     Args:
         profile_name: The profile name (maps to grillbiz-profiles/cards/{profile_name}/state.json).
     """
-    script_path = os.path.join(os.path.dirname(__file__), "grill-card", "card_parser.py")
+    script_path = os.path.join(os.path.dirname(__file__), "skills", "grill-card", "card_parser.py")
     try:
         res = subprocess.run(
             [sys.executable, script_path, profile_name, "gallery"],
@@ -137,7 +137,7 @@ def compile_card_matrix(profile_name: str) -> str:
     Args:
         profile_name: The profile name (maps to grillbiz-profiles/cards/{profile_name}/state.json).
     """
-    script_path = os.path.join(os.path.dirname(__file__), "grill-card", "card_parser.py")
+    script_path = os.path.join(os.path.dirname(__file__), "skills", "grill-card", "card_parser.py")
     try:
         res = subprocess.run(
             [sys.executable, script_path, profile_name, "cards"],
@@ -157,7 +157,7 @@ def render_business_cards(html_path: str, output_dir: str, theme: str = "theme-g
         output_dir: Absolute path to the directory to save the cropped PNGs to.
         theme: Theme name ('theme-glassmorphism', 'theme-dark-minimalist', 'theme-gradient-bold', 'theme-classic-light').
     """
-    script_path = os.path.join(os.path.dirname(__file__), "grill-card", "scripts", "render_cards.py")
+    script_path = os.path.join(os.path.dirname(__file__), "skills", "grill-card", "scripts", "render_cards.py")
     try:
         res = subprocess.run(
             [sys.executable, script_path, html_path, output_dir, theme],
@@ -171,7 +171,7 @@ def _get_profile_manager():
     import importlib.util
     spec = importlib.util.spec_from_file_location(
         "profile_manager", 
-        os.path.join(os.path.dirname(__file__), "grill-biz", "profile_manager.py")
+        os.path.join(os.path.dirname(__file__), "skills", "grill-biz", "profile_manager.py")
     )
     profile_manager = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(profile_manager)
@@ -220,7 +220,7 @@ def remove_image_background(input_path: str, output_path: str = "") -> str:
         input_path: Absolute or workspace-relative path to the source image (PNG, JPG, WEBP).
         output_path: (Optional) Where to save the result. Defaults to same path with '_nobg.png' suffix.
     """
-    script_path = os.path.join(os.path.dirname(__file__), "grill-background", "remove_bg.py")
+    script_path = os.path.join(os.path.dirname(__file__), "skills", "grill-background", "remove_bg.py")
     cmd = [sys.executable, script_path, input_path]
     if output_path:
         cmd.append(output_path)
@@ -236,11 +236,11 @@ def remove_image_background(input_path: str, output_path: str = "") -> str:
 # ==========================================================
 
 def _read_skill_instructions(skill_folder: str) -> str:
-    path = os.path.join(os.path.dirname(__file__), skill_folder, "SKILL.md")
+    path = os.path.join(os.path.dirname(__file__), "skills", skill_folder, "SKILL.md")
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
             return f.read()
-    return f"Error: Instructions for skill '{skill_folder}' not found."
+    return f"Error: Instructions for skill '{skill_folder}' not found at {path}."
 
 @mcp.prompt()
 def grill_biz_workflow() -> str:

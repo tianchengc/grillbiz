@@ -82,8 +82,25 @@ else
     echo "--------------------------------------------------"
 fi
 
-# 4. Verify Local Installation
-echo -e "\n[3/3] Verifying MCP server compilation..."
+# 4. Copy skills to global agent customizations folders
+echo -e "\n[3/4] Copying skills to local AI agent config directories..."
+GEMINI_SKILLS_DIR="$HOME/.gemini/config/skills"
+CLAUDE_SKILLS_DIR="$HOME/.claude/skills"
+
+if [ -d "$GEMINI_SKILLS_DIR" ] || [ -d "$HOME/.gemini/config" ]; then
+    mkdir -p "$GEMINI_SKILLS_DIR"
+    cp -R skills/* "$GEMINI_SKILLS_DIR/"
+    echo "✅ Copied GrillBiz skills to Antigravity global config ($GEMINI_SKILLS_DIR)"
+fi
+
+if [ -d "$CLAUDE_SKILLS_DIR" ] || [ -d "$HOME/.claude" ]; then
+    mkdir -p "$CLAUDE_SKILLS_DIR"
+    cp -R skills/* "$CLAUDE_SKILLS_DIR/"
+    echo "✅ Copied GrillBiz skills to Claude Code global config ($CLAUDE_SKILLS_DIR)"
+fi
+
+# 5. Verify Local Installation
+echo -e "\n[4/4] Verifying MCP server compilation..."
 if python3 mcp_server.py --help &>/dev/null; then
     echo "Success: GrillBiz MCP Server compiled successfully!"
 else

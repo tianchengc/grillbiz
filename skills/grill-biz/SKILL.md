@@ -31,8 +31,28 @@ The user can invoke this skill to manage multiple startup ideas in their workspa
    - Welcome the user and start the interactive 9-block interview (Stage 2).
 
 ### Stage 2: The 9-Block Interactive Interview
-Walk the user through the 9 blocks of the Lean Canvas one-by-one. Do not just accept passive responses; critique their answers if they are too broad or vague (e.g. if their target audience is "everyone" or if their unique value proposition is just "being cheaper/better").
+Before beginning the block-by-block interview, evaluate the workspace context:
 
+#### Step 1: Context Evaluation & Profiling (Warm vs. Cold Start)
+1. **Analyze the Workspace:** Search for and read any existing files (such as `README.md`, `CONTEXT.md`, `package.json`, source files, or text descriptions) to gather baseline business details.
+2. **Warm Start (Workspace Context Exists):** If you find sufficient business details in the workspace, use them to generate drafts for the blocks directly.
+3. **Cold Start (No Workspace Context):** If the workspace is empty or lacks business context, initiate a quick, intuitive **"Grill-Me" style profiling session**. Ask the user 3 simple questions to establish the foundation:
+   - *What is the core business idea or product concept?*
+   - *Who are the target customers or users?*
+   - *Why is it different or better than existing alternatives?*
+   Use their answers as the baseline context for generating the drafts.
+
+#### Step 2: Block-by-Block Draft & Review Loop
+Walk the user through the 9 blocks of the Lean Canvas one-by-one:
+1. For **each** block, synthesize the baseline context (from files or the profiling session) to **generate a high-quality draft response** first.
+2. Present this draft to the user, ask *"Is this draft accurate?"* (or *"Is this draft correct?"*), and prompt them to choose:
+   - **[1] Yes** (Accept draft and proceed)
+   - **[2] No** (Edit/provide feedback to refine it)
+3. If the user selects **[1] Yes** (or types "yes"), accept the draft and proceed to the next block.
+4. If the user selects **[2] No** (or types "no"), allow them to input their reason, feedback, or a refining prompt. Refine the draft using their input, and present the updated draft for selection again.
+5. Do not accept vague or low-effort answers; critique and push for detail when necessary (e.g. if their target audience is "everyone" or if their unique value proposition is just "being cheaper/better").
+
+#### The 9 Blocks to Cover:
 1. **Problem:** What are the top 3 customer pain points? What are the existing alternatives?
 2. **Customer Segments:** Who is the target audience? Who are the *early adopters*? (VPC alignment)
 3. **Unique Value Proposition (UVP):** What is a clear, compelling statement of why your product is different and worth buying? What is the high-level concept?
@@ -47,7 +67,7 @@ Once all blocks are answered, compile the text into `grillbiz-profiles/{profile_
 
 ### Stage 3: HTML Web Visualization
 After writing the Markdown profile, execute the Python parser tool:
-`python3 grill-biz/canvas_parser.py <profile_name>`
+`python3 skills/grill-biz/canvas_parser.py <profile_name>`
 This will generate `grillbiz-profiles/web/{profile_name}.html` in the user's workspace, allowing them to open the visual grid in their browser.
 
 ---

@@ -30,3 +30,18 @@ LEAN_CANVAS.md
 # Ignore local test run execution outputs
 # (Allows committing test profiles and scripts under tests/ while ignoring generated results)
 tests/output/
+
+# Next.js Boilerplate Build Artifacts
+**/boilerplate/.next/
+**/boilerplate/out/
+**/boilerplate/.env.local
+**/boilerplate/.env.development.local
+**/boilerplate/.env.test.local
+**/boilerplate/.env.production.local
+**/boilerplate/npm-debug.log*
+
+# Profile Deploy Credentials
+grillbiz-profiles/**/*.env.deploy
+
+# Cloudflare Wrangler cache
+.wrangler/

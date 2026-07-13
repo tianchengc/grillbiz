@@ -303,6 +303,11 @@ def grill_bio_workflow() -> str:
     return _read_skill_instructions("grill-bio")
 
 @mcp.prompt()
+def grill_home_workflow() -> str:
+    """Load the Grill-Home strategic business homepage stepper and layout configuration guidelines."""
+    return _read_skill_instructions("grill-home")
+
+@mcp.prompt()
 def grill_background_workflow() -> str:
     """Load the Grill-Background image background removal skill instructions."""
     return _read_skill_instructions("grill-background")

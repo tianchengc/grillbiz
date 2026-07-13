@@ -29,7 +29,7 @@ export function BioHero() {
 
       <BlurFade delay={0.1}>
         <div className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900 font-serif">
             {profile.name}
           </h1>
           <p className="text-sm font-medium text-primary">{profile.company}</p>

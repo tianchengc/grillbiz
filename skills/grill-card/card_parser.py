@@ -25,8 +25,8 @@ import json
 import os
 import sys
 
-WORKSPACE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-TEMPLATES_DIR = os.path.join(WORKSPACE_DIR, "skills", "grill-card", "templates")
+WORKSPACE_DIR = os.getcwd()
+TEMPLATES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates")
 
 
 def load_state(profile_name: str) -> dict:

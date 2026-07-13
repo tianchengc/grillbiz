@@ -8,7 +8,7 @@ def generate_logo_html(profile_name):
     # Locate paths
     script_dir = os.path.dirname(os.path.realpath(__file__)) # .../skills/grill-logo
     skills_dir = os.path.dirname(script_dir) # .../skills
-    workspace_dir = os.path.dirname(skills_dir) # .../
+    workspace_dir = os.getcwd()
     
     # Import profile_manager dynamically to handle hyphenated folder name
     spec = importlib.util.spec_from_file_location(

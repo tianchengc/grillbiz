@@ -3,6 +3,20 @@ import sys
 import os
 import re
 
+def md_to_html(text: str) -> str:
+    """Convert simple inline markdown elements (bold, italic, code) to HTML."""
+    # Escape basic HTML characters to prevent breaking layout
+    text = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    # Bold
+    text = re.sub(r"\*\*(.*?)\*\*", r"<strong>\1</strong>", text)
+    text = re.sub(r"__(.*?)__", r"<strong>\1</strong>", text)
+    # Italic
+    text = re.sub(r"\*(.*?)\*", r"<em>\1</em>", text)
+    text = re.sub(r"_(.*?)_", r"<em>\1</em>", text)
+    # Inline Code
+    text = re.sub(r"`(.*?)`", r"<code>\1</code>", text)
+    return text
+
 def parse_markdown(filepath):
     """
     Parse standard Lean Canvas Markdown headings and bullet points.
@@ -49,16 +63,19 @@ def parse_markdown(filepath):
             
             # Check for sub-elements starting with **
             if re.search(r"^\*\s*\*\*[^:]*?alternative", line, re.IGNORECASE):
-                sections["alternatives"] = re.sub(r"^\*\s*\*\*.*?\*\*:\s*|^\*\s*\*\*.*?\:\*\*\s*", "", line)
+                raw_val = re.sub(r"^\*\s*\*\*.*?\*\*:\s*|^\*\s*\*\*.*?\:\*\*\s*", "", line)
+                sections["alternatives"] = md_to_html(raw_val)
             elif re.search(r"^\*\s*\*\*[^:]*?early adopter", line, re.IGNORECASE):
-                sections["early_adopters"] = re.sub(r"^\*\s*\*\*.*?\*\*:\s*|^\*\s*\*\*.*?\:\*\*\s*", "", line)
+                raw_val = re.sub(r"^\*\s*\*\*.*?\*\*:\s*|^\*\s*\*\*.*?\:\*\*\s*", "", line)
+                sections["early_adopters"] = md_to_html(raw_val)
             elif re.search(r"^\*\s*\*\*[^:]*?concept", line, re.IGNORECASE):
-                sections["concept"] = re.sub(r"^\*\s*\*\*.*?\*\*:\s*|^\*\s*\*\*.*?\:\*\*\s*", "", line)
+                raw_val = re.sub(r"^\*\s*\*\*.*?\*\*:\s*|^\*\s*\*\*.*?\:\*\*\s*", "", line)
+                sections["concept"] = md_to_html(raw_val)
             else:
                 # Standard bullet point
-                clean_bullet = re.sub(r"^\*\s*", "", line)
-                if clean_bullet:
-                    bullets.append(clean_bullet)
+                raw_val = re.sub(r"^\*\s*", "", line)
+                if raw_val:
+                    bullets.append(md_to_html(raw_val))
 
         bullet_html = "\n".join([f"<li>{b}</li>" for b in bullets])
         

@@ -177,41 +177,6 @@ def _get_profile_manager():
     spec.loader.exec_module(profile_manager)
     return profile_manager
 
-@mcp.tool()
-def compile_bio_gallery(profile_name: str) -> str:
-    """
-    Generate the dynamic bio style gallery HTML preview page for a profile.
-    
-    Args:
-        profile_name: The business profile name (maps to grillbiz-profiles/{profile_name}/state.json).
-    """
-    script_path = os.path.join(os.path.dirname(__file__), "grill-bio", "bio_parser.py")
-    try:
-        res = subprocess.run(
-            [sys.executable, script_path, profile_name, "gallery"],
-            capture_output=True, text=True, check=True
-        )
-        return res.stdout
-    except subprocess.CalledProcessError as e:
-        return f"Error compiling bio gallery: {e.stderr}"
-
-@mcp.tool()
-def compile_bio_page(profile_name: str) -> str:
-    """
-    Generate the final compiled dynamic bio landing website HTML page for a profile.
-    
-    Args:
-        profile_name: The business profile name (maps to grillbiz-profiles/{profile_name}/state.json).
-    """
-    script_path = os.path.join(os.path.dirname(__file__), "grill-bio", "bio_parser.py")
-    try:
-        res = subprocess.run(
-            [sys.executable, script_path, profile_name, "bio"],
-            capture_output=True, text=True, check=True
-        )
-        return res.stdout
-    except subprocess.CalledProcessError as e:
-        return f"Error compiling bio page: {e.stderr}"
 
 @mcp.tool()
 def list_business_profiles() -> str:

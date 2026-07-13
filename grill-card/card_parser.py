@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-grill-card/compile_cards.py
-===========================
+grill-card/card_parser.py
+=========================
 General-purpose compile script for Grill-Card.
 
 Usage:
-    python3 grill-card/compile_cards.py <profile_name>
+    python3 grill-card/card_parser.py <profile_name> [gallery|cards] [--liked-only]
 
 Reads card_styles and liked_card_styles from:
     grillbiz-profiles/{profile}/state.json
@@ -442,14 +442,21 @@ def apply_proceed(profile_name: str, final_ids: list):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python3 grill-card/compile_cards.py <profile_name> [--liked-only]")
+        print("Usage: python3 grill-card/card_parser.py <profile_name> [gallery|cards] [--liked-only]")
         print("")
         print("Examples:")
-        print("  python3 grill-card/compile_cards.py chahaven")
-        print("  python3 grill-card/compile_cards.py chahaven --liked-only")
+        print("  python3 grill-card/card_parser.py chahaven")
+        print("  python3 grill-card/card_parser.py chahaven gallery")
+        print("  python3 grill-card/card_parser.py chahaven cards --liked-only")
         sys.exit(1)
 
     profile = sys.argv[1]
+    
+    # Parse mode if provided
+    mode = None
+    if len(sys.argv) > 2 and sys.argv[2] in ("gallery", "cards", "matrix"):
+        mode = sys.argv[2]
+        
     liked_only = "--liked-only" in sys.argv
 
     state = load_state(profile)
@@ -460,11 +467,18 @@ if __name__ == "__main__":
     print(f"   Liked styles: {len(state.get('liked_card_styles', []))}")
     print()
 
+    # Always compile both to keep gallery and cards matrix synchronized
     gallery_path = compile_gallery(profile, state)
     cards_path = compile_cards(profile, state, liked_only=liked_only)
 
     print()
     print("🎨 Open in your browser:")
-    print(f"   Style Gallery : file://{gallery_path}")
-    if cards_path:
-        print(f"   Team Cards    : file://{cards_path}")
+    if mode == "gallery":
+        print(f"   Style Gallery : file://{gallery_path}")
+    elif mode in ("cards", "matrix"):
+        if cards_path:
+            print(f"   Team Cards    : file://{cards_path}")
+    else:
+        print(f"   Style Gallery : file://{gallery_path}")
+        if cards_path:
+            print(f"   Team Cards    : file://{cards_path}")

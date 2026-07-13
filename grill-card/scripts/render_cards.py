@@ -59,13 +59,13 @@ def render_cards(html_path, output_dir, theme="theme-glassmorphism"):
             safe_name = member['name'].replace(" ", "_").lower()
             
             # Screenshot Front Side
-            front_selector = f"#card-front-{i}"
+            front_selector = f"#{member['frontId']}"
             front_output = os.path.join(output_dir, f"{safe_name}_front.png")
             print(f"Exporting front of {member['name']} -> {front_output}")
             page.locator(front_selector).screenshot(path=front_output, omit_background=True)
 
             # Screenshot Back Side
-            back_selector = f"#card-back-{i}"
+            back_selector = f"#{member['backId']}"
             back_output = os.path.join(output_dir, f"{safe_name}_back.png")
             print(f"Exporting back of {member['name']} -> {back_output}")
             page.locator(back_selector).screenshot(path=back_output, omit_background=True)

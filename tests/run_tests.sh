@@ -14,71 +14,105 @@ mkdir -p tests/output/cards
 mkdir -p tests/output/bio
 mkdir -p tests/output/cards/pngs
 
+# Clean temporary profiles generated for tests
+rm -rf grillbiz-profiles/apex_cloud
+rm -rf grillbiz-profiles/ecothreads
+rm -rf grillbiz-profiles/cleangreen
+
 # 2. Run /grill-biz canvas parser validation
 echo -e "\n[1/3] Running Canvas Parser Validation..."
-python3 grill-biz/canvas_parser.py tests/profiles/apex_cloud.md tests/output/web/apex_cloud.html
-python3 grill-biz/canvas_parser.py tests/profiles/ecothreads.md tests/output/web/ecothreads.html
-python3 grill-biz/canvas_parser.py tests/profiles/cleangreen.md tests/output/web/cleangreen.html
+python3 skills/grill-biz/canvas_parser.py tests/profiles/apex_cloud.md tests/output/web/apex_cloud.html
+python3 skills/grill-biz/canvas_parser.py tests/profiles/ecothreads.md tests/output/web/ecothreads.html
+python3 skills/grill-biz/canvas_parser.py tests/profiles/cleangreen.md tests/output/web/cleangreen.html
 
 # 3. Simulate Card Compiler & Run Playwright batch screenshot renderer
 echo -e "\n[2/3] Compiling Card Templates and Batch Rendering PNGs..."
-# Execute helper Python command to inject mock team data into card templates
+# Generate mock state.json files and run card_parser.py to build valid HTML files
 python3 -c '
 import json, os
-template_path = "grill-card/templates/card_template.html"
-with open(template_path, "r") as f:
-    template = f.read()
 
-# Test Case 1: Apex Cloud (Solo)
-apex_data = [{"name": "Alex Rivera", "role": "Cloud Architect", "email": "alex@apexcloud.io", "phone": "+1 (555) 102-9382", "company": "Apex Cloud Consulting", "website": "apexcloud.io", "logo_url": "../../grillbiz_logo.png"}]
-out1 = template.replace("{{COMPANY}}", "Apex Cloud").replace("{{CARDS_DATA_JSON}}", json.dumps(apex_data))
-with open("tests/output/cards/apex_cards.html", "w") as f: f.write(out1)
+def create_mock_profile(profile_name, company, logo_url, tagline, contact, team):
+    os.makedirs(f"grillbiz-profiles/{profile_name}", exist_ok=True)
+    state = {
+        "profile": profile_name,
+        "company": company,
+        "tagline": tagline,
+        "contact": contact,
+        "logo_url": logo_url,
+        "team": team,
+        "round": 1,
+        "liked_logo_ids": [],
+        "liked_card_styles": [],
+        "socials": {},
+        "card_styles": [
+            {
+                "id": "style-1",
+                "name": "Glassmorphism Test",
+                "font_import": "@import url(\"https://fonts.googleapis.com/css2?family=Outfit:wght@300;400&display=swap\");",
+                "card_bg": "rgba(255,255,255,0.1)",
+                "card_border": "1px solid rgba(255,255,255,0.2)",
+                "card_shadow": "0 8px 32px 0 rgba(0,0,0,0.3)",
+                "front_html": "<div class=\"card-front\"><div class=\"card-company\">{{COMPANY}}</div>{{TAGLINE}}</div>",
+                "back_html": "<div class=\"card-back\"><div class=\"back-left\"><div class=\"back-name\">{{NAME}}</div><div class=\"back-role\">{{ROLE}}</div></div><div class=\"back-right\">{{INFO_ROWS}}</div></div>",
+                "custom_css": ""
+            }
+        ]
+    }
+    with open(f"grillbiz-profiles/{profile_name}/state.json", "w") as f:
+        json.dump(state, f, indent=2)
 
-# Test Case 2: EcoThreads (Solo Store)
-eco_data = [{"name": "Sarah Jenkins", "role": "Creative Director", "email": "sarah@ecothreads.co", "phone": "+1 (555) 839-1029", "company": "EcoThreads", "website": "ecothreads.co", "logo_url": "../../grillbiz_logo.png"}]
-out2 = template.replace("{{COMPANY}}", "EcoThreads").replace("{{CARDS_DATA_JSON}}", json.dumps(eco_data))
-with open("tests/output/cards/ecothreads_cards.html", "w") as f: f.write(out2)
+# Case 1: Apex Cloud
+create_mock_profile(
+    "apex_cloud", "Apex Cloud", "../../grillbiz_logo.png", "Cloud native solutions",
+    {"email": "alex@apexcloud.io", "phone": "+1 (555) 102-9382"},
+    [{"name": "Alex Rivera", "role": "Cloud Architect", "email": "alex@apexcloud.io", "phone": "+1 (555) 102-9382"}]
+)
 
-# Test Case 3: CleanGreen (4-Person Team)
-clean_data = [
-    {"name": "David Vance", "role": "Founder & CEO", "email": "david@cleangreen.com", "phone": "+1 (555) 482-9102", "company": "CleanGreen Solutions", "website": "cleangreen.com", "logo_url": "../../grillbiz_logo.png"},
-    {"name": "Maria Santos", "role": "COO (Operations)", "email": "maria@cleangreen.com", "phone": "+1 (555) 482-9103", "company": "CleanGreen Solutions", "website": "cleangreen.com", "logo_url": "../../grillbiz_logo.png"},
-    {"name": "James Cole", "role": "CFO (Finance)", "email": "james@cleangreen.com", "phone": "+1 (555) 482-9104", "company": "CleanGreen Solutions", "website": "cleangreen.com", "logo_url": "../../grillbiz_logo.png"},
-    {"name": "Sarah Brooks", "role": "Lead Cleaner", "email": "s.brooks@cleangreen.com", "phone": "+1 (555) 482-9105", "company": "CleanGreen Solutions", "website": "cleangreen.com", "logo_url": "../../grillbiz_logo.png"}
-]
-out3 = template.replace("{{COMPANY}}", "CleanGreen Solutions").replace("{{CARDS_DATA_JSON}}", json.dumps(clean_data))
-with open("tests/output/cards/cleangreen_cards.html", "w") as f: f.write(out3)
+# Case 2: EcoThreads
+create_mock_profile(
+    "ecothreads", "EcoThreads", "../../grillbiz_logo.png", "Earthy and green",
+    {"email": "sarah@ecothreads.co", "phone": "+1 (555) 839-1029"},
+    [{"name": "Sarah Jenkins", "role": "Creative Director", "email": "sarah@ecothreads.co", "phone": "+1 (555) 839-1029"}]
+)
+
+# Case 3: CleanGreen
+create_mock_profile(
+    "cleangreen", "CleanGreen Solutions", "../../grillbiz_logo.png", "Eco cleaning",
+    {"email": "info@cleangreen.com", "phone": "+1 (555) 482-9102"},
+    [
+        {"name": "David Vance", "role": "Founder & CEO", "email": "david@cleangreen.com", "phone": "+1 (555) 482-9102"},
+        {"name": "Maria Santos", "role": "COO (Operations)", "email": "maria@cleangreen.com", "phone": "+1 (555) 482-9103"},
+        {"name": "James Cole", "role": "CFO (Finance)", "email": "james@cleangreen.com", "phone": "+1 (555) 482-9104"},
+        {"name": "Sarah Brooks", "role": "Lead Cleaner", "email": "s.brooks@cleangreen.com", "phone": "+1 (555) 482-9105"}
+    ]
+)
 '
+
+# Compile cards using card_parser.py
+python3 skills/grill-card/card_parser.py apex_cloud
+python3 skills/grill-card/card_parser.py ecothreads
+python3 skills/grill-card/card_parser.py cleangreen
+
+# Copy compiled HTML to tests/output/cards/ so it is saved there
+cp grillbiz-profiles/apex_cloud/cards/apex_cloud_cards.html tests/output/cards/apex_cards.html
+cp grillbiz-profiles/ecothreads/cards/ecothreads_cards.html tests/output/cards/ecothreads_cards.html
+cp grillbiz-profiles/cleangreen/cards/cleangreen_cards.html tests/output/cards/cleangreen_cards.html
 
 # Run render_cards.py to export card PNGs (verifies playwright is installed and works)
-python3 grill-card/scripts/render_cards.py tests/output/cards/apex_cards.html tests/output/cards/pngs/ theme-glassmorphism
-python3 grill-card/scripts/render_cards.py tests/output/cards/ecothreads_cards.html tests/output/cards/pngs/ theme-dark-minimalist
-python3 grill-card/scripts/render_cards.py tests/output/cards/cleangreen_cards.html tests/output/cards/pngs/ theme-classic-light
+python3 skills/grill-card/scripts/render_cards.py tests/output/cards/apex_cards.html tests/output/cards/pngs/ theme-glassmorphism
+python3 skills/grill-card/scripts/render_cards.py tests/output/cards/ecothreads_cards.html tests/output/cards/pngs/ theme-dark-minimalist
+python3 skills/grill-card/scripts/render_cards.py tests/output/cards/cleangreen_cards.html tests/output/cards/pngs/ theme-classic-light
 
-# 4. Simulate Bio Website Generator
-echo -e "\n[3/3] Compiling Bio Website Layout Templates..."
-# Execute helper Python command to inject mock link/product/blog data into bio layouts
-python3 -c '
-import json
-with open("grill-bio/templates/layout_classic_stack.html", "r") as f: stack_template = f.read()
-with open("grill-bio/templates/layout_profile_card.html", "r") as f: card_template = f.read()
+# Clean up temp profiles
+rm -rf grillbiz-profiles/apex_cloud
+rm -rf grillbiz-profiles/ecothreads
+rm -rf grillbiz-profiles/cleangreen
 
-# Test Case 1: Apex Cloud (Classic Stack)
-socials = [{"platform": "LinkedIn", "url": "https://linkedin.com"}, {"platform": "GitHub", "url": "https://github.com"}]
-links = [{"title": "Book a Cloud Audit", "url": "https://apexcloud.io/audit"}, {"title": "Terraform Modules", "url": "https://github.com/apex/terraform"}]
-out1 = stack_template.replace("{{COMPANY}}", "Apex Cloud").replace("{{BIO_DESCRIPTION}}", "Fractional DevOps and cloud infrastructure optimization").replace("{{LOGO_URL}}", "../../grillbiz_logo.png").replace("{{SOCIAL_DATA_JSON}}", json.dumps(socials)).replace("{{LINKS_DATA_JSON}}", json.dumps(links)).replace("{{PRODUCTS_DATA_JSON}}", "[]").replace("{{BLOGS_DATA_JSON}}", "[]")
-with open("tests/output/bio/apex_bio.html", "w") as f: f.write(out1)
-
-# Test Case 2: EcoThreads (Profile Hub Grid)
-eco_socials = [{"platform": "Instagram", "url": "https://instagram.com"}, {"platform": "Patreon", "url": "https://patreon.com"}]
-eco_links = [{"title": "Shop Sustainable Hoodies", "url": "https://ecothreads.co/hoodies"}]
-eco_prods = [
-    {"title": "Bamboo Hoodie", "description": "Ultra-soft bamboo-fiber hoodie", "price": "$45.00", "image_url": "https://cdn-icons-png.flaticon.com/512/3649/3649775.png"},
-    {"title": "Organic Cotton Tee", "description": "Sustainable cotton t-shirt", "price": "$20.00", "image_url": "https://cdn-icons-png.flaticon.com/512/3649/3649775.png"}
-]
-out2 = card_template.replace("{{COMPANY}}", "EcoThreads").replace("{{BIO_DESCRIPTION}}", "Ultra-soft, highly durable bamboo-fiber apparel").replace("{{LOGO_URL}}", "../../grillbiz_logo.png").replace("{{SOCIAL_DATA_JSON}}", json.dumps(eco_socials)).replace("{{LINKS_DATA_JSON}}", json.dumps(eco_links)).replace("{{PRODUCTS_DATA_JSON}}", json.dumps(eco_prods)).replace("{{BLOGS_DATA_JSON}}", "[]")
-with open("tests/output/bio/ecothreads_bio.html", "w") as f: f.write(out2)
-'
+# 4. Validate Next.js Bio Website compilation
+echo -e "\n[3/3] Validating Next.js Boilerplate Build..."
+cd skills/grill-bio/boilerplate
+npm run build
+cd ../../..
 
 echo -e "\n=================================================="
 echo "          TEST RUN COMPLETED SUCCESSFULLY         "
